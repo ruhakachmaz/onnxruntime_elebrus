@@ -291,6 +291,7 @@ else()  # minimal and/or reduced ops build
   endif()
 endif()
 
+
 if((NOT onnxruntime_MINIMAL_BUILD OR onnxruntime_EXTENDED_MINIMAL_BUILD)
    AND NOT onnxruntime_REDUCED_OPS_BUILD)
   list(APPEND onnxruntime_test_optimizer_src
@@ -366,6 +367,7 @@ else()
 endif()
 
 file(GLOB onnxruntime_test_providers_src CONFIGURE_DEPENDS ${onnxruntime_test_providers_src_patterns})
+
 
 if(NOT onnxruntime_MINIMAL_BUILD AND NOT onnxruntime_REDUCED_OPS_BUILD)
   file(GLOB_RECURSE onnxruntime_test_providers_cpu_src CONFIGURE_DEPENDS
@@ -824,6 +826,15 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
       "${TEST_SRC_DIR}/providers/memcpy_test.cc"
     )
   endif()
+endif()
+if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    list(REMOVE_ITEM all_tests
+        "${TEST_SRC_DIR}/optimizer/nhwc_transformer_test.cc"
+        "${TEST_SRC_DIR}/optimizer/qdq_transformer_test.cc"
+        "${TEST_SRC_DIR}/optimizer/transpose_optimizer_test.cc")
+    list(REMOVE_ITEM all_tests
+        "${TEST_SRC_DIR}/framework/bfc_arena_test.cc"
+        )
 endif()
 
 set(test_all_args)
