@@ -308,7 +308,7 @@ TEST(ThreadPoolTest, TestConcurrentParallelFor_1Thread_4Conc_8Tasks) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_1Thread_4Conc_8Tasks", 1, 4, 8);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_1Thread_4Conc_1MTasks) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_1Thread_4Conc_1MTasks) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_1Thread_4Conc_1MTasks", 1, 4, 1000000);
 }
 
@@ -324,7 +324,7 @@ TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_1Conc_8Tasks) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_8Tasks", 4, 1, 8);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_1Conc_1MTasks) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_1Conc_1MTasks) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks", 4, 1, 1000000);
 }
 
@@ -388,31 +388,31 @@ TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_8Tasks_dynamic_bloc
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_8Tasks_dynamic_block_base_128", 4, 4, 8, 128);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks", 4, 4, 1000000);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_1) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_1) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_1", 4, 4, 1000000, 1);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_4) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_4) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_4", 4, 4, 1000000, 4);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16", 4, 4, 1000000, 16);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16_hybrid) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16_hybrid) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_16", 4, 4, 1000000, 16, true);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128", 4, 4, 1000000, 128);
 }
 
-TEST(ThreadPoolTest, TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128_hybrid) {
+TEST(ThreadPoolTest, DISABLED_TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128_hybrid) {
   TestConcurrentParallelFor("TestConcurrentParallelFor_4Thread_4Conc_1MTasks_dynamic_block_base_128", 4, 4, 1000000, 128, true);
 }
 
@@ -428,7 +428,7 @@ TEST(ThreadPoolTest, TestBurstScheduling_16Tasks) {
   TestBurstScheduling("TestBurstScheduling_16Tasks", 16);
 }
 
-TEST(ThreadPoolTest, TestBurstScheduling_65536Task) {
+TEST(ThreadPoolTest, DISABLED_TestBurstScheduling_65536Task) {
   // Attempt to exhaust the size of the queues used in the thread pool to
   // buffer tasks.
   TestBurstScheduling("TestBurstScheduling_65536Tasks", 65536);

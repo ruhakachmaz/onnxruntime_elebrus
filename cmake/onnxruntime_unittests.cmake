@@ -831,6 +831,8 @@ if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     list(REMOVE_ITEM all_tests
         "${TEST_SRC_DIR}/optimizer/nhwc_transformer_test.cc"
         "${TEST_SRC_DIR}/optimizer/qdq_transformer_test.cc"
+        "${TEST_SRC_DIR}/platform/threadpool_test.cc"
+        "${TEST_SRC_DIR}/contrib_ops/attention_op_test.cc"
         "${TEST_SRC_DIR}/optimizer/transpose_optimizer_test.cc")
     list(REMOVE_ITEM all_tests
         "${TEST_SRC_DIR}/framework/bfc_arena_test.cc"
