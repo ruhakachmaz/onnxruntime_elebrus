@@ -52,7 +52,7 @@ class Txt2ImgPipeline(StableDiffusionPipeline):
         guidance=7.5,
         seed=None,
         warmup=False,
-        return_type="latents",
+        return_type="latent",
     ):
         assert len(prompt) == len(negative_prompt)
         batch_size = len(prompt)
@@ -79,16 +79,16 @@ class Txt2ImgPipeline(StableDiffusionPipeline):
             latents = self.denoise_latent(latents, text_embeddings, guidance=guidance)
 
             # VAE decode latent
-            images = self.decode_latent(latents)
+            images = self.decode_latent(latents / self.vae_scaling_factor)
 
             torch.cuda.synchronize()
             e2e_toc = time.perf_counter()
 
+            perf_data = None
             if not warmup:
-                self.print_summary(e2e_tic, e2e_toc, batch_size)
-                self.save_images(images, "txt2img", prompt)
+                perf_data = self.print_summary(e2e_tic, e2e_toc, batch_size)
 
-            return images, (e2e_toc - e2e_tic) * 1000.0
+            return images, perf_data
 
     def run(
         self,
@@ -100,7 +100,7 @@ class Txt2ImgPipeline(StableDiffusionPipeline):
         guidance=7.5,
         seed=None,
         warmup=False,
-        return_type="images",
+        return_type="image",
     ):
         """
         Run the diffusion pipeline.
@@ -123,7 +123,7 @@ class Txt2ImgPipeline(StableDiffusionPipeline):
             warmup (bool):
                 Indicate if this is a warmup run.
             return_type (str):
-                type of return. The value can be "latents" or "images".
+                type of return. The value can be "latent" or "image".
         """
         if self.is_backend_tensorrt():
             import tensorrt as trt

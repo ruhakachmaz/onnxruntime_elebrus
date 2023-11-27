@@ -258,8 +258,71 @@ export const tensorTypeToWsglValueType = (type: DataType, components: 1|2|3|4 = 
   return typeof mappedType === 'string' ? mappedType : mappedType[1];
 };
 
-export const createTensorShapeVariables = (dims: readonly number[]):
-    ProgramUniform[] => [{type: 'uint32', data: dims}, {type: 'uint32', data: ShapeUtil.computeStrides(dims)}];
+export const createTensorShapeVariables = (dims: readonly number[]): ProgramUniform[] =>
+    dims.length === 0 ? [] : [{type: 'uint32', data: dims}, {type: 'uint32', data: ShapeUtil.computeStrides(dims)}];
+
+/**
+ * A helper function to get maximum vector size for specified data length
+ * @param size
+ */
+export const getMaxComponents = (size: number) => {
+  // we cannot use vec3 type since it has alignment of 16 bytes
+  if (size % 4 === 0) {
+    return 4;
+  } else if (size % 2 === 0) {
+    return 2;
+  }
+
+  return 1;
+};
+
+/**
+ * A helper function that initializes variable as a scalar or vector. e.g. f32(0) or vec4f(0,0,0,0)
+ * @param dataType
+ * @param components
+ * @param value
+ */
+export const fillVector = (dataType = 'f32', components?: number, value = '0') => {
+  if (!components || components === 1) {
+    return `${dataType}(${value})`;
+  }
+
+  return `vec${components}<${dataType}>(${value})`;
+};
+
+/**
+ * A helper function that casts value or vector to f32
+ * @param dataType
+ * @param components
+ * @param value
+ */
+export const castToF32 = (dataType: string, components: number, value: string) => {
+  if (dataType === 'f32') {
+    return value;
+  }
+  if (components === 1) {
+    return `f32(${value})`;
+  }
+
+  return `vec${components}f(${value})`;
+};
+
+/**
+ * A helper function that returns scalar or sums all components of a vector
+ * @param name
+ * @param components
+ */
+export const sumVector = (name: string, components: number) => {
+  if (components === 4) {
+    return `(${name}.x + ${name}.y + ${name}.z + ${name}.w)`;
+  } else if (components === 2) {
+    return `(${name}.x + ${name}.y)`;
+  } else if (components === 3) {
+    return `(${name}.x + ${name}.y + ${name}.z)`;
+  }
+
+  return name;
+};
 
 /**
  * A helper function to get a IndicesHelper for a given input or output.
@@ -583,6 +646,8 @@ export const outputVariable =
     (name: string, type: number, shapeOrRank: number|readonly number[], components: 1|2|3|4 = 1): IndicesHelper =>
         createIndicesHelper(name, type, shapeOrRank, false, components);
 
+export type UniformsArrayType = Array<{name: string; type: string}>;
+
 /**
  * A ShaderHelper is a helper class for generating WGSL code.
  */
@@ -634,6 +699,7 @@ export interface ShaderHelper {
    * A helper function to register one uniform. Can be called multiple times to register multiple uniforms.
    */
   registerUniform(name: string, type: string): ShaderHelper;
+  registerUniforms(nameToTypeMap: UniformsArrayType): ShaderHelper;
 }
 
 class ShaderHelperImpl implements ShaderHelper {
@@ -654,11 +720,12 @@ class ShaderHelperImpl implements ShaderHelper {
     const paramList = is1DimensionDispatch ? `@builtin(global_invocation_id) global_id : vec3<u32>,
     @builtin(local_invocation_id) local_id : vec3<u32>` :
                                              `@builtin(local_invocation_index) local_index : u32,
-    @builtin(workgroup_id) workgroup_id : vec3<u32>`;
+    @builtin(workgroup_id) workgroup_id : vec3<u32>,
+    @builtin(num_workgroups) num_workgroups : vec3<u32>`;
     const globalIdxDefinition = is1DimensionDispatch ?
         'let global_idx = global_id.x;' :
-        `let global_idx = (workgroup_id.z * ${this.normalizedDispatchGroup[0] * this.normalizedDispatchGroup[1]}u +
-          workgroup_id.y * ${this.normalizedDispatchGroup[0]}u + workgroup_id.x) * ${
+        `let global_idx = (workgroup_id.z * num_workgroups[0] * num_workgroups[1] +
+          workgroup_id.y * num_workgroups[0] + workgroup_id.x) * ${
             workgroupSizeX * workgroupSizeY * workgroupSizeZ}u + local_index;`;
 
     return `@compute @workgroup_size(${workgroupSizeX}, ${workgroupSizeY}, ${workgroupSizeZ})
@@ -669,11 +736,13 @@ class ShaderHelperImpl implements ShaderHelper {
 
   private declareVariable(variable: IndicesHelper, bindingIndex: number): string {
     this.indicesHelpers.push(variable);
-    if (variable.shape.startsWith('uniforms.')) {
-      this.uniforms.push({name: variable.shape.replace('uniforms.', ''), type: variable.type.indices});
-    }
-    if (variable.strides.startsWith('uniforms.')) {
-      this.uniforms.push({name: variable.strides.replace('uniforms.', ''), type: variable.type.indices});
+    if (variable.rank !== 0) {
+      if (variable.shape.startsWith('uniforms.')) {
+        this.uniforms.push({name: variable.shape.replace('uniforms.', ''), type: variable.type.indices});
+      }
+      if (variable.strides.startsWith('uniforms.')) {
+        this.uniforms.push({name: variable.strides.replace('uniforms.', ''), type: variable.type.indices});
+      }
     }
     const access = variable.usage === 'input' ? 'read' : 'read_write';
     const storageType = variable.type.storage;
@@ -689,8 +758,13 @@ class ShaderHelperImpl implements ShaderHelper {
     return this;
   }
 
+  registerUniforms(additionalUniforms: UniformsArrayType): ShaderHelper {
+    this.uniforms = this.uniforms.concat(additionalUniforms);
+    return this;
+  }
+
   private indicesHelpers: IndicesHelper[] = [];
-  private uniforms: Array<{name: string; type: string}> = [];
+  private uniforms: UniformsArrayType = [];
   private uniformDeclaration(): string {
     if (this.uniforms.length === 0) {
       return '';
@@ -740,3 +814,6 @@ export const getBroadcastDims = (inShape: readonly number[], outShape: readonly 
   }
   return dims;
 };
+
+// TODO: remove this limitation once >4D dims are supported by uniform.
+export const enableShapesUniforms = (rank: number): boolean => rank <= 4;

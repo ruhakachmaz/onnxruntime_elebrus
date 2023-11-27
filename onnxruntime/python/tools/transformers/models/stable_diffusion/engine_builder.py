@@ -59,11 +59,17 @@ class EngineBuilder:
         self.device = torch.device(device)
         self.torch_device = torch.device(device, torch.cuda.current_device())
         self.stages = pipeline_info.stages()
-        self.vae_torch_fallback = self.pipeline_info.is_sd_xl()
+
+        self.vae_torch_fallback = self.pipeline_info.vae_torch_fallback()
+        self.custom_fp16_vae = self.pipeline_info.custom_fp16_vae()
 
         self.models = {}
         self.engines = {}
         self.torch_models = {}
+        self.use_vae_slicing = False
+
+    def enable_vae_slicing(self):
+        self.use_vae_slicing = True
 
     def teardown(self):
         for engine in self.engines.values():
@@ -71,13 +77,19 @@ class EngineBuilder:
         self.engines = {}
 
     def get_cached_model_name(self, model_name):
+        # TODO(tianleiwu): save custom model to a directory named by its original model.
+        if model_name == "unetxl" and self.pipeline_info.custom_unet():
+            model_name = "lcm_" + model_name
+
+        # TODO: When we support original VAE, we shall save custom VAE to another directory.
+
         if self.pipeline_info.is_inpaint():
             model_name += "_inpaint"
         return model_name
 
-    def get_onnx_path(self, model_name, onnx_dir, opt=True):
+    def get_onnx_path(self, model_name, onnx_dir, opt=True, suffix=""):
         engine_name = self.engine_type.name.lower()
-        directory_name = self.get_cached_model_name(model_name) + (f".{engine_name}" if opt else "")
+        directory_name = self.get_cached_model_name(model_name) + (f".{engine_name}" if opt else "") + suffix
         onnx_model_dir = os.path.join(onnx_dir, directory_name)
         os.makedirs(onnx_model_dir, exist_ok=True)
         return os.path.join(onnx_model_dir, "model.onnx")
@@ -87,6 +99,7 @@ class EngineBuilder:
 
     def load_models(self, framework_model_dir: str):
         # Disable torch SDPA since torch 2.0.* cannot export it to ONNX
+        # TODO(tianleiwu): Test and remove it if this is not needed in Torch 2.1.
         if hasattr(torch.nn.functional, "scaled_dot_product_attention"):
             delattr(torch.nn.functional, "scaled_dot_product_attention")
 
@@ -130,7 +143,7 @@ class EngineBuilder:
                 fp16=export_fp16_unet,
                 max_batch_size=self.max_batch_size,
                 unet_dim=4,
-                time_dim=(5 if self.pipeline_info.is_sd_xl_refiner() else 6),
+                time_dim=(5 if self.pipeline_info.is_xl_refiner() else 6),
             )
 
         # VAE Decoder
@@ -140,6 +153,7 @@ class EngineBuilder:
                 None,  # not loaded yet
                 device=self.torch_device,
                 max_batch_size=self.max_batch_size,
+                custom_fp16_vae=self.custom_fp16_vae,
             )
 
             if self.vae_torch_fallback:
@@ -150,19 +164,29 @@ class EngineBuilder:
         for model_name, obj in self.models.items():
             if model_name == "vae" and self.vae_torch_fallback:
                 continue
+            slice_size = 1 if (model_name == "vae" and self.use_vae_slicing) else batch_size
             self.engines[model_name].allocate_buffers(
-                shape_dict=obj.get_shape_dict(batch_size, image_height, image_width), device=self.torch_device
+                shape_dict=obj.get_shape_dict(slice_size, image_height, image_width), device=self.torch_device
             )
 
-    def vae_decode(self, latents):
+    def _vae_decode(self, latents):
         if self.vae_torch_fallback:
-            latents = latents.to(dtype=torch.float32)
-            self.torch_models["vae"] = self.torch_models["vae"].to(dtype=torch.float32)
+            if not self.custom_fp16_vae:
+                latents = latents.to(dtype=torch.float32)
+                self.torch_models["vae"] = self.torch_models["vae"].to(dtype=torch.float32)
             images = self.torch_models["vae"](latents)["sample"]
         else:
             images = self.run_engine("vae", {"latent": latents})["images"]
 
         return images
+
+    def vae_decode(self, latents):
+        if self.use_vae_slicing:
+            # The output tensor points to same buffer. Need clone it to avoid overwritten.
+            decoded_slices = [self._vae_decode(z_slice).clone() for z_slice in latents.split(1)]
+            return torch.cat(decoded_slices)
+
+        return self._vae_decode(latents)
 
 
 def get_engine_paths(work_dir: str, pipeline_info: PipelineInfo, engine_type: EngineType):
