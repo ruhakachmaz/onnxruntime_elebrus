@@ -1079,6 +1079,8 @@ Return Value:
     return C;
 }
 
+#if !defined(__e2k__)
+
 void
 MlasSgemmOperation(
     CBLAS_TRANSPOSE TransA,
@@ -1317,6 +1319,39 @@ Return Value:
         }
     }
 }
+
+#else
+
+void
+MlasSgemmOperation(
+    CBLAS_TRANSPOSE TransA,
+    CBLAS_TRANSPOSE TransB,
+    size_t M,
+    size_t N,
+    size_t K,
+    float alpha,
+    const float* A,
+    size_t lda,
+    const float* B,
+    size_t ldb,
+    float beta,
+    float* C,
+    size_t ldc
+    ){
+    for (size_t m = 0; m < M; m++) {
+        for (size_t n = 0; n < N; n++) {
+            float sum = 0.0f;
+            for (size_t k = 0; k < K; k++) {
+                float a_val = TransA == CblasNoTrans ? A[m * lda + k] : A[k * lda + m];
+                float b_val = TransB == CblasNoTrans ? B[k * ldb + n] : B[n * ldb + k];
+                sum += a_val * b_val;
+            }
+            C[m * ldc + n] = alpha * sum + beta * C[m * ldc + n];
+        }
+    }
+}
+
+#endif
 
 void
 MlasSgemmPackedOperation(
