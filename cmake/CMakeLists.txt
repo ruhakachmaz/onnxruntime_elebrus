@@ -228,6 +228,21 @@ cmake_dependent_option(MSVC_Z7_OVERRIDE "replacing /Zi and /ZI with /Z7 when usi
 option(onnxruntime_USE_AZURE "Build with azure inferencing support" OFF)
 option(onnxruntime_USE_LOCK_FREE_QUEUE "Build with lock-free task queue for threadpool." OFF)
 
+
+add_definitions(-Wno-error=unused-parameter)
+add_definitions(-Wno-unknown-attributes)
+add_definitions(-w)
+
+
+
+# Это отключает оптимизации Eigen
+add_definitions(-DEIGEN_DONT_PARALLELIZE)
+add_definitions(-DEIGEN_DONT_VECTORIZE)
+add_definitions(-DEIGEN_MAX_ALIGN_BYTES=0)
+add_definitions(-DEIGEN_NO_CUDA)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-error-always-inline")
+
 # ENABLE_TRAINING includes all training functionality
 # The following 2 entry points
 # 1. ORTModule
