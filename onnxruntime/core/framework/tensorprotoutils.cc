@@ -620,7 +620,7 @@ Status GetExtDataFromTensorProto(const Env& env, const ORTCHAR_T* model_path,
     }
 
     SafeInt<FileOffsetType> end_of_read(file_offset);
-    end_of_read += raw_data_safe_len;
+    end_of_read += narrow<FileOffsetType>(raw_data_safe_len);
     ORT_RETURN_IF(file_offset < 0 || end_of_read > narrow<FileOffsetType>(file_length),
                   "External initializer: ", tensor_proto.name(),
                   " offset: ", file_offset, " size to read: ", static_cast<size_t>(raw_data_safe_len),
