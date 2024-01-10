@@ -76,11 +76,7 @@ void ValidateTypeAndShapeForScaleAndZP(ONNX_NAMESPACE::InferenceContext& ctx, in
 
 std::function<void(OpSchema&)> QLinearMathDocGenerator(const char* name, const char* additionalDocumentation) {
   return [=](OpSchema& schema) {
-    std::string doc = R"DOC(
-Performs element-wise binary {name} on 8 bit data types (with Numpy-style broadcasting support).
-
-{additionalDocumentation}
-)DOC";
+    std::string doc = R"DOC(\nPerforms element-wise binary {name} on 8 bit data types (with Numpy-style broadcasting support).\n\n{additionalDocumentation}\n)DOC";
     ONNX_NAMESPACE::ReplaceAll(doc, "{name}", name);
     ONNX_NAMESPACE::ReplaceAll(doc, "{additionalDocumentation}", additionalDocumentation);
     schema.SetDoc(doc);
@@ -134,11 +130,7 @@ Performs element-wise binary {name} on 8 bit data types (with Numpy-style broadc
   };
 }
 
-static const char* QuantizeLinear_ver1_doc = R"DOC(
-The linear quantization operator. It consumes a full precision data, a scale, a zero point to compute the low precision / quantized tensor.
-The quantization formula is y = saturate ((x / y_scale) + y_zero_point).For saturation, it saturates to [0, 255] if it's uint8, or [-128, 127] if it's int8.
-For (x / y_scale), it's rounding to nearest ties to even. Refer to https://en.wikipedia.org/wiki/Rounding for details.
-Scale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').)DOC";
+static const char* QuantizeLinear_ver1_doc = R"DOC(\nThe linear quantization operator. It consumes a full precision data, a scale, a zero point to compute the low precision / quantized tensor.\nThe quantization formula is y = saturate ((x / y_scale) + y_zero_point).For saturation, it saturates to [0, 255] if it's uint8, or [-128, 127] if it's int8.\nFor (x / y_scale), it's rounding to nearest ties to even. Refer to https://en.wikipedia.org/wiki/Rounding for details.\nScale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QuantizeLinear, 1,
@@ -176,10 +168,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           updateOutputShape(ctx, 0, input_shape);
         }));
 
-static const char* DequantizeLinear_ver1_doc = R"DOC(
-The linear dequantization operator. It consumes a quantized data, a scale, a zero point and computes the full precision data.
-The dequantization formula is y = (x - x_zero_point) * x_scale.
-Scale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').)DOC";
+static const char* DequantizeLinear_ver1_doc = R"DOC(\nThe linear dequantization operator. It consumes a quantized data, a scale, a zero point and computes the full precision data.\nThe dequantization formula is y = (x - x_zero_point) * x_scale.\nScale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(DequantizeLinear, 1,
                             OpSchema()
@@ -221,9 +210,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(DequantizeLinear, 1,
                                   updateOutputShape(ctx, 0, input_shape);
                                 }));
 
-static const char* QuantizeBFP_ver1_doc = R"DOC(
-The BFP quantization operator. It consumes a full precision tensor and computes an BFP tensor.
-More documentation on the BFP format can be found in this paper: https://www.microsoft.com/en-us/research/publication/pushing-the-limits-of-narrow-precision-inferencing-at-cloud-scale-with-microsoft-floating-point/)DOC";
+static const char* QuantizeBFP_ver1_doc = R"DOC(\nThe BFP quantization operator. It consumes a full precision tensor and computes an BFP tensor.\nMore documentation on the BFP format can be found in this paper: https://www.microsoft.com/en-us/research/publication/pushing-the-limits-of-narrow-precision-inferencing-at-cloud-scale-with-microsoft-floating-point/)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QuantizeBFP, 1,
@@ -266,10 +253,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           updateOutputShape(ctx, 2, {num_dims_proto});
         }));
 
-static const char* DequantizeBFP_ver1_doc = R"DOC(
-The BFP dequantization operator.
-It consumes the raw BFP data and some metadata such as the shape and strides of the original tensor and computes the dequantized tensor.
-More documentation on the BFP format can be found in this paper: https://www.microsoft.com/en-us/research/publication/pushing-the-limits-of-narrow-precision-inferencing-at-cloud-scale-with-microsoft-floating-point/)DOC";
+static const char* DequantizeBFP_ver1_doc = R"DOC(\nThe BFP dequantization operator.\nIt consumes the raw BFP data and some metadata such as the shape and strides of the original tensor and computes the dequantized tensor.\nMore documentation on the BFP format can be found in this paper: https://www.microsoft.com/en-us/research/publication/pushing-the-limits-of-narrow-precision-inferencing-at-cloud-scale-with-microsoft-floating-point/)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     DequantizeBFP, 1,
@@ -309,11 +293,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
 
 ONNX_MS_OPERATOR_SET_SCHEMA(ReduceSumInteger, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-Computes the sum of the low-precision input tensor's element along the provided axes.
-The resulting tensor has the same rank as the input if keepdims equal 1. If keepdims equal 0,
-then the resulting tensor have the reduced dimension pruned. The above behavior is similar to numpy,
-with the exception that numpy default keepdims to False instead of True.)DOC")
+                                .SetDoc(R"DOC(\nComputes the sum of the low-precision input tensor's element along the provided axes.\nThe resulting tensor has the same rank as the input if keepdims equal 1. If keepdims equal 0,\nthen the resulting tensor have the reduced dimension pruned. The above behavior is similar to numpy,\nwith the exception that numpy default keepdims to False instead of True.)DOC")
                                 .Input(0, "data", "An input tensor.", "T1")
                                 .Output(0, "reduced", "Reduced output tensor.", "T2")
                                 .TypeConstraint("T1", {"tensor(int8)", "tensor(uint8)"},
@@ -333,15 +313,7 @@ with the exception that numpy default keepdims to False instead of True.)DOC")
 ONNX_MS_OPERATOR_SET_SCHEMA(
     MulInteger, 1,
     OpSchema()
-        .SetDoc(R"DOC(Performs element-wise binary quantized multiplication (with Numpy-style broadcasting support).
-"This operator supports **multidirectional (i.e., Numpy-style) broadcasting**"
-The output of this op is the int32 accumulated result of the mul operation
-
-```
-C (int32) = (A - A_zero_point) * (B - B_zero_point)
-```
-
-)DOC")
+        .SetDoc(R"DOC(Performs element-wise binary quantized multiplication (with Numpy-style broadcasting support).\n"This operator supports **multidirectional (i.e., Numpy-style) broadcasting**"\nThe output of this op is the int32 accumulated result of the mul operation\n\n```\nC (int32) = (A - A_zero_point) * (B - B_zero_point)\n```\n\n)DOC")
         .Input(0, "A", "First operand.", "T")
         .Input(1, "A_zero_point",
                "Input A zero point. Default value is 0 if it's not specified. It's a scalar, which means a "
@@ -455,19 +427,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QLinearReduceMean, 1,
     OpSchema()
-        .SetDoc(R"DOC(
-Computes the mean of the low-precision input tensor's element along the provided axes.
-The resulting tensor has the same rank as the input if keepdims equal 1. If keepdims equal 0,
-then the resulting tensor have the reduced dimension pruned. The above behavior is similar to numpy,
-with the exception that numpy default keepdims to False instead of True.
-Input and Output scales and zero points are used to requantize the output in a new range.
-This helps to improve accuracy as after ReduceMean operation the range of the output is expected to decrease.
-
-```
-"Output = Dequantize(Input) -> ReduceMean on fp32 data -> Quantize(output)",
-
-```
-)DOC")
+        .SetDoc(R"DOC(\nComputes the mean of the low-precision input tensor's element along the provided axes.\nThe resulting tensor has the same rank as the input if keepdims equal 1. If keepdims equal 0,\nthen the resulting tensor have the reduced dimension pruned. The above behavior is similar to numpy,\nwith the exception that numpy default keepdims to False instead of True.\nInput and Output scales and zero points are used to requantize the output in a new range.\nThis helps to improve accuracy as after ReduceMean operation the range of the output is expected to decrease.\n\n```\n"Output = Dequantize(Input) -> ReduceMean on fp32 data -> Quantize(output)",\n\n```\n)DOC")
         .Input(0, "data", "An input tensor.", "T")
         .Input(1, "data_scale", "Input scale. It's a scalar, which means a per-tensor/layer quantization.",
                "tensor(float)")
@@ -542,11 +502,7 @@ This helps to improve accuracy as after ReduceMean operation the range of the ou
           }
         }));
 
-const char* QLinearLeakyReluDoc_ver1 = R"DOC(
-QLinearLeakyRelu takes quantized input data (Tensor), an argument alpha, and quantize parameter for output,
-and produces one output data (Tensor<T>) where the function `f(x) = quantize(alpha * dequantize(x)) for dequantize(x) < 0`,
-`f(x) = quantize(dequantize(x)) for dequantize(x) >= 0`, is applied to the data tensor elementwise.
-)DOC";
+const char* QLinearLeakyReluDoc_ver1 = R"DOC(\nQLinearLeakyRelu takes quantized input data (Tensor), an argument alpha, and quantize parameter for output,\nand produces one output data (Tensor<T>) where the function `f(x) = quantize(alpha * dequantize(x)) for dequantize(x) < 0`,\n`f(x) = quantize(dequantize(x)) for dequantize(x) >= 0`, is applied to the data tensor elementwise.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QLinearLeakyRelu, 1,
@@ -570,10 +526,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
         .TypeConstraint("T", {"tensor(uint8)", "tensor(int8)"}, "Constrain input and output types to 8 bit tensors.")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-const char* QLinearSigmoidDoc_ver1 = R"DOC(
-QLinearSigmoid takes quantized input data (Tensor), and quantize parameter for output, and produces one output data
-(Tensor<T>) where the function `f(x) = quantize(Sigmoid(dequantize(x)))`, is applied to the data tensor elementwise.
-Wwhere the function `Sigmoid(x) = 1 / (1 + exp(-x))` )DOC";
+const char* QLinearSigmoidDoc_ver1 = R"DOC(\nQLinearSigmoid takes quantized input data (Tensor), and quantize parameter for output, and produces one output data\n(Tensor<T>) where the function `f(x) = quantize(Sigmoid(dequantize(x)))`, is applied to the data tensor elementwise.\nWwhere the function `Sigmoid(x) = 1 / (1 + exp(-x))` )DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QLinearSigmoid, 1,
@@ -599,14 +552,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QLinearSoftmax, 1,
     OpSchema()
-        .SetDoc(R"DOC(
-QLinearSoftmax computes the normalized exponential values for the given input:
-Softmax(input, axis) = Exp(input) / ReduceSum(Exp(input), axis=axis, keepdims=1)
-The input does not need to explicitly be a 2D vector. The "axis" attribute
-indicates the dimension along which QLinearSoftmax will be performed for onnx v.13+.
-or the dimension coerced to NxD Matrix for onnx v.12-.
-The output tensor has the same shape.
-)DOC")
+        .SetDoc(R"DOC(\nQLinearSoftmax computes the normalized exponential values for the given input:\nSoftmax(input, axis) = Exp(input) / ReduceSum(Exp(input), axis=axis, keepdims=1)\nThe input does not need to explicitly be a 2D vector. The "axis" attribute\nindicates the dimension along which QLinearSoftmax will be performed for onnx v.13+.\nor the dimension coerced to NxD Matrix for onnx v.12-.\nThe output tensor has the same shape.\n)DOC")
         .Attr("axis",
               "apply softmax to elements for dimensions axis,"
               "or all dims along with axis according to op-version",
@@ -1001,12 +947,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           AttentionTypeAndShapeInference(ctx, past_input_index);
         }));
 
-constexpr const char* QEmbedLayerNormalization_ver1_doc = R"DOC(
-QEmbedLayerNormalization is the quantized fusion of embedding layer in BERT model, with optional mask processing.
-The embedding layer takes input_ids (word IDs) and segment_ids (sentence IDs) to look up word_embedding, position_embedding,
-and segment_emedding; the embeddings are added then applied layer normalization using gamma and beta tensors. The input_ids
-and segment_ids remain int32. All embeddings, gamma, and beta tensors are converted to int8/uint8. The last input mask is optional.
-If mask is provided, mask index (that is position of first 0 in mask, or number of words will be calculated.)DOC";
+constexpr const char* QEmbedLayerNormalization_ver1_doc = R"DOC(\nQEmbedLayerNormalization is the quantized fusion of embedding layer in BERT model, with optional mask processing.\nThe embedding layer takes input_ids (word IDs) and segment_ids (sentence IDs) to look up word_embedding, position_embedding,\nand segment_emedding; the embeddings are added then applied layer normalization using gamma and beta tensors. The input_ids\nand segment_ids remain int32. All embeddings, gamma, and beta tensors are converted to int8/uint8. The last input mask is optional.\nIf mask is provided, mask index (that is position of first 0 in mask, or number of words will be calculated.)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QEmbedLayerNormalization, 1,
@@ -1094,18 +1035,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           updateOutputShape(ctx, 0, input_shape);
         }));
 
-constexpr const char* QOrderedMatMul_ver1_doc = R"DOC(
-Quantize (Int8) MatMul with order. Implement Y = alpha * A * B + bias + beta * C. Matrix A, B, C, Y are all int8 matrix.
-Two type of order combination supported:
-  *) When order_B is ORDER_COL, order_A must be ORDER_ROW.
-         bias is vector of {#cols of Y} of float32, C should be batch 1/batch_A. B could be of batch 1 or batch_A.
-         Note B is reorder to ORDER_COL, or Transposed. Not Transposed first and then Reordered here.
-  *) When order_B is specify ORDER_COL4_4R2_8C or ORDER_COL32_2R_4R4, orderA must be ORDER_COL32.
-         MatMul will be implemented using alpha(A * B) + beta * C => Y.
-         bias is not supported here. B in fact is transposed first then reordered into ORDER_COL4_4R2_8C or ORDER_COL32_2R_4R4 here.
-order_Y and order_C will be same as order_A.
-Support per column quantized weight, ie, scale_B is 1-D vector of size [#cols of matrix B].
-)DOC";
+constexpr const char* QOrderedMatMul_ver1_doc = R"DOC(\nQuantize (Int8) MatMul with order. Implement Y = alpha * A * B + bias + beta * C. Matrix A, B, C, Y are all int8 matrix.\nTwo type of order combination supported:\n  *) When order_B is ORDER_COL, order_A must be ORDER_ROW.\n         bias is vector of {#cols of Y} of float32, C should be batch 1/batch_A. B could be of batch 1 or batch_A.\n         Note B is reorder to ORDER_COL, or Transposed. Not Transposed first and then Reordered here.\n  *) When order_B is specify ORDER_COL4_4R2_8C or ORDER_COL32_2R_4R4, orderA must be ORDER_COL32.\n         MatMul will be implemented using alpha(A * B) + beta * C => Y.\n         bias is not supported here. B in fact is transposed first then reordered into ORDER_COL4_4R2_8C or ORDER_COL32_2R_4R4 here.\norder_Y and order_C will be same as order_A.\nSupport per column quantized weight, ie, scale_B is 1-D vector of size [#cols of matrix B].\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QOrderedMatMul, 1,
@@ -1132,19 +1062,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           ONNX_NAMESPACE::matmulShapeInference(ctx, 0, 2);
         }));
 
-static const char* Attention_QOrdered_doc = R"DOC(
-Quantized version of simplified Multi-Head Self Attention(using int8 with specific matrix Layout).
-Multi-Head Self Attention that can be either unidirectional (like GPT-2) or bidirectional (like BERT).
-The mask_index input is optional. Besides raw attention mask with shape (batch_size, past_sequence_length + sequence_length)
-or (batch_size, sequence_length, past_sequence_length + sequence_length) with value 0 for masked and 1 otherwise,
-we also support other two formats: When input has right-side padding, mask_index is one dimension with shape (batch_size),
-where value of each element is the end position, or valid length of actual sequence excluding padding. When input has
-left-side padding, mask_index has shape (2 * batch_size), where the values are the exclusive end positions followed by
-the inclusive start positions. When unidirectional is 1, and each token only attend to previous tokens. For GPT-2, both past
-and present state are optional. Present state could appear in output even when past state is not in input.
-Current version does not support past/present, relative_position_bias and qkv_hidden_sizes.
-TODO: Support them if needed in the future.
-)DOC";
+static const char* Attention_QOrdered_doc = R"DOC(\nQuantized version of simplified Multi-Head Self Attention(using int8 with specific matrix Layout).\nMulti-Head Self Attention that can be either unidirectional (like GPT-2) or bidirectional (like BERT).\nThe mask_index input is optional. Besides raw attention mask with shape (batch_size, past_sequence_length + sequence_length)\nor (batch_size, sequence_length, past_sequence_length + sequence_length) with value 0 for masked and 1 otherwise,\nwe also support other two formats: When input has right-side padding, mask_index is one dimension with shape (batch_size),\nwhere value of each element is the end position, or valid length of actual sequence excluding padding. When input has\nleft-side padding, mask_index has shape (2 * batch_size), where the values are the exclusive end positions followed by\nthe inclusive start positions. When unidirectional is 1, and each token only attend to previous tokens. For GPT-2, both past\nand present state are optional. Present state could appear in output even when past state is not in input.\nCurrent version does not support past/present, relative_position_bias and qkv_hidden_sizes.\nTODO: Support them if needed in the future.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     QOrderedAttention, 1,
@@ -1356,21 +1274,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
     QLinearConvTranspose,
     1,
     OpSchema()
-        .SetDoc(R"DOC( Similar to ConvTranspose in onnx, but with quantization.
-The convolution transpose operator consumes an input tensor and a filter,
-and computes the output.
-
-If the pads parameter is provided the shape of the output is calculated via the following equation:
-
-  output_shape[i] = stride[i] * (input_size[i] - 1) + output_padding[i] + ((kernel_shape[i] - 1) * dilations[i] + 1) - pads[start_i] - pads[end_i]
-
-output_shape can also be explicitly specified in which case pads values are auto generated using these equations:
-
-  total_padding[i] = stride[i] * (input_size[i] - 1) + output_padding[i] + ((kernel_shape[i] - 1) * dilations[i] + 1) - output_shape[i]
-  If (auto_pads == SAME_UPPER): pads[start_i] = total_padding[i]/2; pads[end_i] = total_padding[i] - (total_padding[i]/2)
-  Else: pads[start_i] = total_padding[i] - (total_padding[i]/2); pads[end_i] = (total_padding[i]/2).
-
-    )DOC")
+        .SetDoc(R"DOC( Similar to ConvTranspose in onnx, but with quantization.\nThe convolution transpose operator consumes an input tensor and a filter,\nand computes the output.\n\nIf the pads parameter is provided the shape of the output is calculated via the following equation:\n\n  output_shape[i] = stride[i] * (input_size[i] - 1) + output_padding[i] + ((kernel_shape[i] - 1) * dilations[i] + 1) - pads[start_i] - pads[end_i]\n\noutput_shape can also be explicitly specified in which case pads values are auto generated using these equations:\n\n  total_padding[i] = stride[i] * (input_size[i] - 1) + output_padding[i] + ((kernel_shape[i] - 1) * dilations[i] + 1) - output_shape[i]\n  If (auto_pads == SAME_UPPER): pads[start_i] = total_padding[i]/2; pads[end_i] = total_padding[i] - (total_padding[i]/2)\n  Else: pads[start_i] = total_padding[i] - (total_padding[i]/2); pads[end_i] = (total_padding[i]/2).\n\n    )DOC")
         .Input(
             0,
             "x",

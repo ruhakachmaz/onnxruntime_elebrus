@@ -21,17 +21,7 @@ using ONNX_NAMESPACE::TensorShapeProto;
 using ONNX_NAMESPACE::DbgOperatorSetTracker;
 #endif
 
-constexpr const char* GroupNorm_ver1_doc = R"DOC(
-Applies Group Normalization over a mini-batch of inputs as described in the paper Group Normalization (https://arxiv.org/abs/1803.08494).
-
-This operator transforms input according to
-  y = gamma * (x - mean) / sqrt(variance + epsilon) + beta
-
-The input channels are separated into num_groups groups, each containing num_channels / num_groups channels. num_channels must be divisible by num_groups. The mean and standard-deviation are calculated separately over the each group.
-The weight and bias are per-channel affine transform parameter vectors of size num_channels.
-
-The activation attribute can be used to enable activation after group normalization.
-)DOC";
+constexpr const char* GroupNorm_ver1_doc = R"DOC(\nApplies Group Normalization over a mini-batch of inputs as described in the paper Group Normalization (https://arxiv.org/abs/1803.08494).\n\nThis operator transforms input according to\n  y = gamma * (x - mean) / sqrt(variance + epsilon) + beta\n\nThe input channels are separated into num_groups groups, each containing num_channels / num_groups channels. num_channels must be divisible by num_groups. The mean and standard-deviation are calculated separately over the each group.\nThe weight and bias are per-channel affine transform parameter vectors of size num_channels.\n\nThe activation attribute can be used to enable activation after group normalization.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     GroupNorm, 1,
@@ -64,10 +54,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
         .TypeConstraint("M", {"tensor(float)"}, "Constrain gamma and beta to float tensors.")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* BiasSplitGelu_ver1_doc = R"DOC(
-A fusion used in diffusion model that after adding bias, hidden state is sliced into two tensors of same size, then left
-tensor multiplies the Gelu activation result of right tensor.
-)DOC";
+constexpr const char* BiasSplitGelu_ver1_doc = R"DOC(\nA fusion used in diffusion model that after adding bias, hidden state is sliced into two tensors of same size, then left\ntensor multiplies the Gelu activation result of right tensor.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     BiasSplitGelu, 1,
@@ -112,9 +99,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           }
         }));
 
-constexpr const char* BiasAdd_ver1_doc = R"DOC(
-Add input with bias, then add residual inputs.
-)DOC";
+constexpr const char* BiasAdd_ver1_doc = R"DOC(\nAdd input with bias, then add residual inputs.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     BiasAdd, 1,

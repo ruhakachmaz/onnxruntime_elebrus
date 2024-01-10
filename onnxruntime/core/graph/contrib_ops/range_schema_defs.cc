@@ -20,10 +20,7 @@ using ::ONNX_NAMESPACE::TensorProto_DataType;
 using ::ONNX_NAMESPACE::TensorShapeProto;
 
 // This Doc based on LSTM_ver7, and modification
-static const char* Range_ver1_doc = R"DOC(
-Creates a sequence of numbers that begins at `start` and extends by increments of `delta`
-up to but not including `limit`.
-)DOC";
+static const char* Range_ver1_doc = R"DOC(\nCreates a sequence of numbers that begins at `start` and extends by increments of `delta`\nup to but not including `limit`.\n)DOC";
 
 template <typename T>
 static T get_data(const TensorProto*) {

@@ -23,11 +23,7 @@
 using namespace ONNX_NAMESPACE;
 namespace onnxruntime {
 namespace contrib {
-constexpr const char* Affine_ver1_doc = R"DOC(
-Affine takes one input data (Tensor<T>) and produces one output data
-(Tensor<T>) where the affine function, y = alpha * x + beta,
-is applied to the tensor elementwise.
-)DOC";
+constexpr const char* Affine_ver1_doc = R"DOC(\nAffine takes one input data (Tensor<T>) and produces one output data\n(Tensor<T>) where the affine function, y = alpha * x + beta,\nis applied to the tensor elementwise.\n)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     Affine, 1,
@@ -41,11 +37,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
                         "Constrain input and output types to float tensors.")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* ParametricSoftplus_ver1_doc = R"DOC(
-ParametricSoftplus takes one input data (Tensor<T>) and produces one output data
-(Tensor<T>) where the softplus function, y = alpha * ln(exp(beta * x) + 1), is applied to
-the tensor elementwise.
-)DOC";
+constexpr const char* ParametricSoftplus_ver1_doc = R"DOC(\nParametricSoftplus takes one input data (Tensor<T>) and produces one output data\n(Tensor<T>) where the softplus function, y = alpha * ln(exp(beta * x) + 1), is applied to\nthe tensor elementwise.\n)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     ParametricSoftplus, 1,
@@ -60,8 +52,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
 constexpr const char* ImageScaler_ver1_doc =
-    R"DOC(Scale and bias the input image. Bias values are stored in
-the same ordering as the image pixel format.)DOC";
+    R"DOC(Scale and bias the input image. Bias values are stored in\nthe same ordering as the image pixel format.)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     ImageScaler, 1,
@@ -76,9 +67,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
 constexpr const char* Crop_ver1_doc =
-    R"DOC(Crop and image to the specified spatial dimensions. If scale is given,
-then optionally start the crop offset by the left/top border amounts.
-If scale is not provided, crop the borders as provided.)DOC";
+    R"DOC(Crop and image to the specified spatial dimensions. If scale is given,\nthen optionally start the crop offset by the left/top border amounts.\nIf scale is not provided, crop the borders as provided.)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     Crop, 1,
@@ -92,10 +81,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
         .TypeConstraint("T", {"tensor(float16)", "tensor(float)", "tensor(double)"},
                         "Constrain input and output types to float tensors."));
 
-constexpr const char* ThresholdedRelu_ver1_doc = R"DOC(
-ThresholdedRelu takes one input data (Tensor<T>) and produces one output data
-(Tensor<T>) where the rectified linear function, y = x for x > alpha, y = 0 otherwise,
-is applied to the tensor elementwise. )DOC";
+constexpr const char* ThresholdedRelu_ver1_doc = R"DOC(\nThresholdedRelu takes one input data (Tensor<T>) and produces one output data\n(Tensor<T>) where the rectified linear function, y = x for x > alpha, y = 0 otherwise,\nis applied to the tensor elementwise. )DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     ThresholdedRelu, 1,
@@ -108,39 +94,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
                         "Constrain input and output types to float tensors.")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* DynamicSlice_ver1_doc = R"DOC(
-Produces a slice of the input tensor along multiple axes. Similar to numpy:
-https://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
-Slices uses `axes`, `starts` and `ends` inputs to specify the start and end
-dimension for each axis in the list of axes, it uses this information to
-slice the input `data` tensor. If a negative value is passed for any of the
-start or end indices, it represent number of elements before the end of that
-dimension. If the value passed to start or end is larger than the `n` (the
-number of elements in this dimension), it represents `n`. For slicing to the
-end of a dimension with unknown size, it is recommended to pass in `INT_MAX`.
-If `axes` are omitted, they are set to `[0, ..., ndim-1]`.
-Example 1:
-  data = [
-      [1, 2, 3, 4],
-      [5, 6, 7, 8],
-  ]
-  axes = [0, 1]
-  starts = [1, 0]
-  ends = [2, 3]
-  result = [
-      [5, 6, 7],
-  ]
-Example 2:
-  data = [
-      [1, 2, 3, 4],
-      [5, 6, 7, 8],
-  ]
-  starts = [0, 1]
-  ends = [-1, 1000]
-  result = [
-      [2, 3, 4],
-  ]
-)DOC";
+constexpr const char* DynamicSlice_ver1_doc = R"DOC(\nProduces a slice of the input tensor along multiple axes. Similar to numpy:\nhttps://docs.scipy.org/doc/numpy/reference/arrays.indexing.html\nSlices uses `axes`, `starts` and `ends` inputs to specify the start and end\ndimension for each axis in the list of axes, it uses this information to\nslice the input `data` tensor. If a negative value is passed for any of the\nstart or end indices, it represent number of elements before the end of that\ndimension. If the value passed to start or end is larger than the `n` (the\nnumber of elements in this dimension), it represents `n`. For slicing to the\nend of a dimension with unknown size, it is recommended to pass in `INT_MAX`.\nIf `axes` are omitted, they are set to `[0, ..., ndim-1]`.\nExample 1:\n  data = [\n      [1, 2, 3, 4],\n      [5, 6, 7, 8],\n  ]\n  axes = [0, 1]\n  starts = [1, 0]\n  ends = [2, 3]\n  result = [\n      [5, 6, 7],\n  ]\nExample 2:\n  data = [\n      [1, 2, 3, 4],\n      [5, 6, 7, 8],\n  ]\n  starts = [0, 1]\n  ends = [-1, 1000]\n  result = [\n      [2, 3, 4],\n  ]\n)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     DynamicSlice, 1,
@@ -189,10 +143,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(GivenTensorFill, 1,
                                        }
                                      }));
 
-constexpr const char* Scale_ver1_doc = R"DOC(
-Scale takes one input data (Tensor<float>) and produces one output data
-(Tensor<float>) whose value is the input data tensor scaled element-wise.
-)DOC";
+constexpr const char* Scale_ver1_doc = R"DOC(\nScale takes one input data (Tensor<float>) and produces one output data\n(Tensor<float>) whose value is the input data tensor scaled element-wise.\n)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
     Scale, 1,
@@ -205,14 +156,7 @@ ONNX_CONTRIB_OPERATOR_SET_SCHEMA(
         .Attr("scale", "The scale to apply.", AttributeProto::FLOAT, 1.0f)
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* GRUUnit_ver1_doc = R"DOC(
-GRUUnit computes the activations of a standard GRU,
-in a sequence-length aware fashion.
-Concretely, given the (fused) inputs X (TxNxD), the previous hidden
-state (NxD), and the sequence lengths (N), computes the GRU
-activations, avoiding computation if the input is invalid (as in, the
-value at X[t][n] >= seqLengths[n].
-)DOC";
+constexpr const char* GRUUnit_ver1_doc = R"DOC(\nGRUUnit computes the activations of a standard GRU,\nin a sequence-length aware fashion.\nConcretely, given the (fused) inputs X (TxNxD), the previous hidden\nstate (NxD), and the sequence lengths (N), computes the GRU\nactivations, avoiding computation if the input is invalid (as in, the\nvalue at X[t][n] >= seqLengths[n].\n)DOC";
 
 ONNX_CONTRIB_OPERATOR_SET_SCHEMA(GRUUnit, 1,
                                  OpSchema()

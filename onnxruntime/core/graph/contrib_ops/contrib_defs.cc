@@ -541,11 +541,7 @@ void GreedySearchShapeInference(ONNX_NAMESPACE::InferenceContext& ctx) {
 }
 
 constexpr const char* Gelu_ver1_doc =
-    R"DOC(Gaussian Error Linear Unit.
-A high-performing neural network activation function.The GELU nonlinearity is
-the expected transformation of a stochastic regularizer which randomly applies
-the identity or zero map to a neuron's input. The GELU nonlinearity weights
-inputs by their magnitude, rather than gates inputs by their sign as in ReLUs.)DOC";
+    R"DOC(Gaussian Error Linear Unit.\nA high-performing neural network activation function.The GELU nonlinearity is\nthe expected transformation of a stochastic regularizer which randomly applies\nthe identity or zero map to a neuron's input. The GELU nonlinearity weights\ninputs by their magnitude, rather than gates inputs by their sign as in ReLUs.)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(Gelu, 1,
                             OpSchema()
@@ -583,8 +579,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(Gelu, 1,
                                 }));
 
 constexpr const char* BiasGelu_ver1_doc =
-    R"DOC(Bias Gelu.
-It's an extension of Gelu. It takes the sum of input A and bias input B as the input of Gelu activation. )DOC";
+    R"DOC(Bias Gelu.\nIt's an extension of Gelu. It takes the sum of input A and bias input B as the input of Gelu activation. )DOC";
 ONNX_MS_OPERATOR_SET_SCHEMA(BiasGelu, 1,
                             OpSchema()
                                 .SetDomain(kMSDomain)
@@ -632,14 +627,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
 // Used to be ONNX 1.7 Inverse(12)
 // Comment out docs not to increase the binary size
 //
-//  constexpr const char* Inverse_ver1_doc = R"DOC(
-// Calculates inverse of a square matrix or batches of square matrices.
-// Inverse takes one input tensor of shape `[*, M, M]`, where `*` is zero or more batch dimensions,
-// and the inner-most 2 dimensions form square matrices. These matrices must be invertible (full-rank).
-// The behavior where one of the matrices is not invertible is undefined. The implementation can choose
-// to throw an error or output (garbage) results as is. The output is a tensor of shape `[*, M, M]`,
-// containing the individual inverses of all input submatrices.
-//)DOC";
+//  constexpr const char* Inverse_ver1_doc = R"DOC(\n// Calculates inverse of a square matrix or batches of square matrices.\n// Inverse takes one input tensor of shape `[*, M, M]`, where `*` is zero or more batch dimensions,\n// and the inner-most 2 dimensions form square matrices. These matrices must be invertible (full-rank).\n// The behavior where one of the matrices is not invertible is undefined. The implementation can choose\n// to throw an error or output (garbage) results as is. The output is a tensor of shape `[*, M, M]`,\n// containing the individual inverses of all input submatrices.\n//)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(Inverse, 1,
                             OpSchema()
@@ -683,10 +671,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(Inverse, 1,
                                   }
                                 }));
 
-constexpr const char* TorchEmbedding_ver1_doc = R"DOC(
-      Based on Torch operator Embedding, creates a lookup table of embedding vectors of fixed size,
-       for a dictionary of fixed size.
-      )DOC";
+constexpr const char* TorchEmbedding_ver1_doc = R"DOC(\n      Based on Torch operator Embedding, creates a lookup table of embedding vectors of fixed size,\n       for a dictionary of fixed size.\n      )DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(TorchEmbedding, 1,
                             OpSchema()
@@ -759,18 +744,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(TorchEmbedding, 1,
                                   updateOutputShape(ctx, 0, outputs_shape);
                                 }));
 
-constexpr const char* Trilu_ver1_doc = R"DOC(
-      Returns the upper or lower triangular part of a 2-D matrix, or batches of 2-D matrices. If the attribute "upper" is set to true,
-      the upper triangular matrix is retained. Lower triangular matrix is retained otherwise. Default value for upper is true.
-      Trilu takes one input tensor of shape [*, N, M], where * is zero or more batch dimensions. The upper triangular part consists
-      of the elements on and above the given diagonal (k). The lower triangular part consists of elements on and below the diagonal.
-      All other elements in the matrix are set to zero.
-      If k = 0, the triangular part on and above/below the main diagonal is retained.
-      If upper is set to true, a positive k retains the upper triangular matrix excluding k diagonals above
-      the main diagonal. A negative k value includes as many diagonals below the main diagonal.
-      If upper is set to false, a positive k retains the lower triangular matrix including k diagonals above
-      the main diagonal. A negative k value excludes as many diagonals below the main diagonal.
-      )DOC";
+constexpr const char* Trilu_ver1_doc = R"DOC(\n      Returns the upper or lower triangular part of a 2-D matrix, or batches of 2-D matrices. If the attribute "upper" is set to true,\n      the upper triangular matrix is retained. Lower triangular matrix is retained otherwise. Default value for upper is true.\n      Trilu takes one input tensor of shape [*, N, M], where * is zero or more batch dimensions. The upper triangular part consists\n      of the elements on and above the given diagonal (k). The lower triangular part consists of elements on and below the diagonal.\n      All other elements in the matrix are set to zero.\n      If k = 0, the triangular part on and above/below the main diagonal is retained.\n      If upper is set to true, a positive k retains the upper triangular matrix excluding k diagonals above\n      the main diagonal. A negative k value includes as many diagonals below the main diagonal.\n      If upper is set to false, a positive k retains the lower triangular matrix including k diagonals above\n      the main diagonal. A negative k value excludes as many diagonals below the main diagonal.\n      )DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(Trilu, 1,
                             OpSchema()
@@ -976,15 +950,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(IsAllFinite, 1,
                                   updateOutputElemType(ctx, 0, ONNX_NAMESPACE::TensorProto::BOOL);
                                 }));
 
-constexpr const char* GridSample_ver1_doc = R"DOC(
-      Given an `input` and a flow-field `grid`, computes the `output` using `input` values and pixel locations from `grid`.
-      Currently, only spatial (4-D) inputs are supported. For `input` with shape (N, C, H, W) and `grid` with shape (N, H_out, W_out, 2),
-      the `output` will have shape (N, C, H_out, W_out).
-      For each output location `output[n, :, h, w]`, the size-2 vector `grid[n, h, w]` specifies `input` pixel locations `x` and `y`,
-      which are used to interpolate the output value `output[n, :, h, w]`.
-      The GridSample operator is often used in doing grid generator and sampler in the [Spatial Transformer Networks](https://arxiv.org/abs/1506.02025).
-      See also in [torch.nn.functional.grid_sample](https://pytorch.org/docs/master/generated/torch.nn.functional.grid_sample.html#torch-nn-functional-grid-sample).
-      )DOC";
+constexpr const char* GridSample_ver1_doc = R"DOC(\n      Given an `input` and a flow-field `grid`, computes the `output` using `input` values and pixel locations from `grid`.\n      Currently, only spatial (4-D) inputs are supported. For `input` with shape (N, C, H, W) and `grid` with shape (N, H_out, W_out, 2),\n      the `output` will have shape (N, C, H_out, W_out).\n      For each output location `output[n, :, h, w]`, the size-2 vector `grid[n, h, w]` specifies `input` pixel locations `x` and `y`,\n      which are used to interpolate the output value `output[n, :, h, w]`.\n      The GridSample operator is often used in doing grid generator and sampler in the [Spatial Transformer Networks](https://arxiv.org/abs/1506.02025).\n      See also in [torch.nn.functional.grid_sample](https://pytorch.org/docs/master/generated/torch.nn.functional.grid_sample.html#torch-nn-functional-grid-sample).\n      )DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(GridSample, 1,
                             OpSchema()
@@ -1195,8 +1161,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(SampleOp, 1,
                                     ONNX_NAMESPACE::OpSchema::numeric_types_for_math_reduction(),
                                     "Constrain to any tensor type. If the dtype attribute is not provided this must be a valid output type.")
                                 .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput)
-                                .SetDoc(R"DOC(
-Sample echo operator.)DOC"));
+                                .SetDoc(R"DOC(\nSample echo operator.)DOC"));
 
 ONNX_MS_OPERATOR_SET_SCHEMA(MaxpoolWithMask, 1,
                             OpSchema()
@@ -1328,9 +1293,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(ConvTransposeWithDynamicPads, 1,
 
 ONNX_MS_OPERATOR_SET_SCHEMA(FusedConv, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-The fused convolution operator schema is the same as Conv besides it includes an attribute
-activation.)DOC")
+                                .SetDoc(R"DOC(\nThe fused convolution operator schema is the same as Conv besides it includes an attribute\nactivation.)DOC")
                                 .Attr(
                                     "auto_pad",
                                     "",
@@ -1406,9 +1369,7 @@ activation.)DOC")
 
 ONNX_MS_OPERATOR_SET_SCHEMA(FusedGemm, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-The FusedGemm operator schema is the same as Gemm besides it includes attributes
-activation and leaky_relu_alpha.)DOC")
+                                .SetDoc(R"DOC(\nThe FusedGemm operator schema is the same as Gemm besides it includes attributes\nactivation and leaky_relu_alpha.)DOC")
                                 .Input(
                                     0,
                                     "A",
@@ -1546,38 +1507,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(ExpandDims, 1,
                                 })
                                 .SetDoc(R"DOC(ExpandDims echo operator.)DOC"));
 
-constexpr const char* Tokenizer_ver1_doc = R"DOC(
-  Tokenizer divides each string in X into a vector of strings along the last axis. Allowed input shapes are [C] and [N, C].
-  If the maximum number of tokens found per input string is D, the output shape would be [N, C, D] when input shape is [N, C].
-  Similarly, if input shape is [C] then the output should be [C, D]. Tokenizer has two different operation modes.
-  The first mode is selected when "tokenexp" is not set and "separators" is set. If "tokenexp" is set and "separators" is not set,
-  the second mode will be used. The first mode breaks each input string into tokens by matching and removing separators.
-  "separators" is a list of strings which are regular expressions. "tokenexp" is a single regular expression.
-  Let's assume "separators" is [" "] and consider an example.
-  If input is
-  ["Hello World", "I love computer science !"] whose shape is [2],
-  then the output would be
- [["Hello", "World", padvalue, padvalue, padvalue],
- ["I", "love", "computer", "science", "!"]]
- whose shape is [2, 5] because you can find at most 5 tokens per input string.
- Note that the input at most can have two axes, so 3-D and higher dimension are not supported.
- If "separators" contains a single empty string, the Tokenizer will enter into character tokenezation mode. This means all strings
- will be broken part into individual characters.
- For each input string, the second mode searches matches of "tokenexp" and each match will be a token in Y.
- The matching of "tokenexp" is conducted greedily (i.e., a match should be as long as possible).
- This operator searches for the first match starting from the beginning of the considered string,
- and then launches another search starting from the first remained character after the first matched token.
- If no match found, this operator will remove the first character from the remained string and do another search.
- This procedure will be repeated until reaching the end of the considered string.
-  Let's consider another example to illustrate the effect of setting "mark" to true.
-  If input is ["Hello", "World"],
-  then the corresponding output would be [0x02, "Hello", "World", 0x03].
-  This implies that if mark is true, [C]/[N, C] - input's output shape becomes [C, D+2]/[N, C, D+2].
-If tokenizer removes the entire content of [C]-input, it will produce [[]].
-I.e. the output shape should be [C][0] or [N][C][0] if input shape was [N][C].
-If the tokenizer receives empty input of [0] then the output is [0] if empty input
-of [N, 0] then [N, 0].
-)DOC";
+constexpr const char* Tokenizer_ver1_doc = R"DOC(\n  Tokenizer divides each string in X into a vector of strings along the last axis. Allowed input shapes are [C] and [N, C].\n  If the maximum number of tokens found per input string is D, the output shape would be [N, C, D] when input shape is [N, C].\n  Similarly, if input shape is [C] then the output should be [C, D]. Tokenizer has two different operation modes.\n  The first mode is selected when "tokenexp" is not set and "separators" is set. If "tokenexp" is set and "separators" is not set,\n  the second mode will be used. The first mode breaks each input string into tokens by matching and removing separators.\n  "separators" is a list of strings which are regular expressions. "tokenexp" is a single regular expression.\n  Let's assume "separators" is [" "] and consider an example.\n  If input is\n  ["Hello World", "I love computer science !"] whose shape is [2],\n  then the output would be\n [["Hello", "World", padvalue, padvalue, padvalue],\n ["I", "love", "computer", "science", "!"]]\n whose shape is [2, 5] because you can find at most 5 tokens per input string.\n Note that the input at most can have two axes, so 3-D and higher dimension are not supported.\n If "separators" contains a single empty string, the Tokenizer will enter into character tokenezation mode. This means all strings\n will be broken part into individual characters.\n For each input string, the second mode searches matches of "tokenexp" and each match will be a token in Y.\n The matching of "tokenexp" is conducted greedily (i.e., a match should be as long as possible).\n This operator searches for the first match starting from the beginning of the considered string,\n and then launches another search starting from the first remained character after the first matched token.\n If no match found, this operator will remove the first character from the remained string and do another search.\n This procedure will be repeated until reaching the end of the considered string.\n  Let's consider another example to illustrate the effect of setting "mark" to true.\n  If input is ["Hello", "World"],\n  then the corresponding output would be [0x02, "Hello", "World", 0x03].\n  This implies that if mark is true, [C]/[N, C] - input's output shape becomes [C, D+2]/[N, C, D+2].\nIf tokenizer removes the entire content of [C]-input, it will produce [[]].\nI.e. the output shape should be [C][0] or [N][C][0] if input shape was [N][C].\nIf the tokenizer receives empty input of [0] then the output is [0] if empty input\nof [N, 0] then [N, 0].\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(Tokenizer, 1,
                             OpSchema()
@@ -1656,9 +1586,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(Tokenizer, 1,
 
 ONNX_MS_OPERATOR_SET_SCHEMA(MatMulInteger16, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
- The production MUST never overflow. The accumulation may overflow if and only if in 32 bits.)DOC")
+                                .SetDoc(R"DOC(\nMatrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.\n The production MUST never overflow. The accumulation may overflow if and only if in 32 bits.)DOC")
                                 .Input(0, "A", "N-dimensional matrix A", "T1")
                                 .Input(1, "B", "N-dimensional matrix B", "T2")
                                 .Output(0, "Y", "Matrix multiply results from A * B", "T3")
@@ -1686,18 +1614,11 @@ Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-
                                   ONNX_NAMESPACE::matmulShapeInference(ctx, 0, 1);
                                 }));
 
-constexpr const char* TransposeMatMul_doc = R"DOC(
-Duplicate of FusedMatMul. Going forward FusedMatMul should be used. This OP will be supported for backward compatibility.
-Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
-)DOC";
+constexpr const char* TransposeMatMul_doc = R"DOC(\nDuplicate of FusedMatMul. Going forward FusedMatMul should be used. This OP will be supported for backward compatibility.\nMatrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html\n)DOC";
 
-constexpr const char* FusedMatMul_doc = R"DOC(
-Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
-)DOC";
+constexpr const char* FusedMatMul_doc = R"DOC(\nMatrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html\n)DOC";
 
-constexpr const char* FusedMatMulActivation_doc = R"DOC(
-Executes the same operation as FusedMatMul, but also has an activation function fused to its output.
-)DOC";
+constexpr const char* FusedMatMulActivation_doc = R"DOC(\nExecutes the same operation as FusedMatMul, but also has an activation function fused to its output.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(TransposeMatMul, 1,
                             OpSchema()
@@ -1914,26 +1835,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(GatherND, 1,
                                          ->add_dim() = data_shape.dim(i);
                                   }
                                 })
-                                .SetDoc(R"DOC(
-Given `data` tensor of rank r >= 1, and `indices` tensor of rank q >= 1, gather
-slices of `data` into an output tensor of rank q - 1 + r - indices[-1].
-Example 1:
-  data    = [[0,1],[2,3]]
-  indices = [[0,0],[1,1]]
-  output  = [0,3]
-Example 2:
-  data    = [[0,1],[2,3]]
-  indices = [[1],[0]]
-  output  = [[2,3],[0,1]]
-Example 3:
-  data    = [[[0,1],[2,3]],[[4,5],[6,7]]]
-  indices = [[0,1],[1,0]]
-  output  = [[2,3],[4,5]]
-Example 4:
-  data    = [[[0,1],[2,3]],[[4,5],[6,7]]]
-  indices = [[[0,1]],[[1,0]]]
-  output  = [[[2,3]],[[4,5]]]
-)DOC"));
+                                .SetDoc(R"DOC(\nGiven `data` tensor of rank r >= 1, and `indices` tensor of rank q >= 1, gather\nslices of `data` into an output tensor of rank q - 1 + r - indices[-1].\nExample 1:\n  data    = [[0,1],[2,3]]\n  indices = [[0,0],[1,1]]\n  output  = [0,3]\nExample 2:\n  data    = [[0,1],[2,3]]\n  indices = [[1],[0]]\n  output  = [[2,3],[0,1]]\nExample 3:\n  data    = [[[0,1],[2,3]],[[4,5],[6,7]]]\n  indices = [[0,1],[1,0]]\n  output  = [[2,3],[4,5]]\nExample 4:\n  data    = [[[0,1],[2,3]],[[4,5],[6,7]]]\n  indices = [[[0,1]],[[1,0]]]\n  output  = [[[2,3]],[[4,5]]]\n)DOC"));
 
 ONNX_MS_OPERATOR_SET_SCHEMA(WordConvEmbedding, 1,
                             OpSchema()
@@ -2061,24 +1963,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(Pad, 1,
                                   }
                                   return;
                                 })
-                                .SetDoc(R"DOC(
-            Given `data` tensor, pads, mode, and value.
-            Example:
-            Insert 0 pads to the beginning of the second dimension.
-            data = [
-                    [1.0, 1.2],
-                    [2.3, 3.4],
-                    [4.5, 5.7],
-                    ]
-            pads = [0, 2, 0, 0]
-            output = [
-                    [
-                    [0.0, 0.0, 1.0, 1.2],
-                    [0.0, 0.0, 2.3, 3.4],
-                    [0.0, 0.0, 4.5, 5.7],
-                    ],
-                    ]
-            )DOC"));
+                                .SetDoc(R"DOC(\n            Given `data` tensor, pads, mode, and value.\n            Example:\n            Insert 0 pads to the beginning of the second dimension.\n            data = [\n                    [1.0, 1.2],\n                    [2.3, 3.4],\n                    [4.5, 5.7],\n                    ]\n            pads = [0, 2, 0, 0]\n            output = [\n                    [\n                    [0.0, 0.0, 1.0, 1.2],\n                    [0.0, 0.0, 2.3, 3.4],\n                    [0.0, 0.0, 4.5, 5.7],\n                    ],\n                    ]\n            )DOC"));
 
 ONNX_MS_OPERATOR_SET_SCHEMA(Unique, 1,
                             OpSchema()
@@ -2129,20 +2014,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(Unique, 1,
 
                                   return;
                                 })
-                                .SetDoc(R"DOC(
-              Finds all the unique values (deduped list) present in the given input tensor.
-              This operator returns 3 outputs.
-              The first output tensor 'uniques' contains all of the unique elements of the input,
-              sorted in the same order that they occur in the input.
-              The second output tensor 'idx' is the same size as the input and it contains the index
-              of each value of the input in 'uniques'.
-              The third output tensor 'counts' contains the count of each element of 'uniques' in the input.
-              Example:
-                input_x = [2, 1, 1, 3, 4, 3]
-                output_uniques = [2, 1, 3, 4]
-                output_idx = [0, 1, 1, 2, 3, 2]
-                output_counts = [1, 2, 2, 1]
-              )DOC"));
+                                .SetDoc(R"DOC(\n              Finds all the unique values (deduped list) present in the given input tensor.\n              This operator returns 3 outputs.\n              The first output tensor 'uniques' contains all of the unique elements of the input,\n              sorted in the same order that they occur in the input.\n              The second output tensor 'idx' is the same size as the input and it contains the index\n              of each value of the input in 'uniques'.\n              The third output tensor 'counts' contains the count of each element of 'uniques' in the input.\n              Example:\n                input_x = [2, 1, 1, 3, 4, 3]\n                output_uniques = [2, 1, 3, 4]\n                output_idx = [0, 1, 1, 2, 3, 2]\n                output_counts = [1, 2, 2, 1]\n              )DOC"));
 
 // see:https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html
 ONNX_MS_OPERATOR_SET_SCHEMA(CDist, 1,
@@ -2242,13 +2114,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(CropAndResize, 1,
                                     fail_shape_inference("crop_size shape input tensor has wrong dimension");
                                   }
                                 })
-                                .SetDoc(R"DOC(
-        Extracts crops from the input image tensor and resizes them using bilinear sampling or nearest neighbor sampling
-        (possibly with aspect ratio change) to a common output size specified by crop_height and crop_width.
-        Returns a tensor with crops from the input image at positions defined at the bounding box locations in boxes.
-        The cropped boxes are all resized (with bilinear or nearest neighbor interpolation) to
-        a fixed size = [crop_height, crop_width]. The result is a 4-D tensor [num_boxes, crop_height, crop_width, depth].
-        The resizing is corner aligned.)DOC"));
+                                .SetDoc(R"DOC(\n        Extracts crops from the input image tensor and resizes them using bilinear sampling or nearest neighbor sampling\n        (possibly with aspect ratio change) to a common output size specified by crop_height and crop_width.\n        Returns a tensor with crops from the input image at positions defined at the bounding box locations in boxes.\n        The cropped boxes are all resized (with bilinear or nearest neighbor interpolation) to\n        a fixed size = [crop_height, crop_width]. The result is a 4-D tensor [num_boxes, crop_height, crop_width, depth].\n        The resizing is corner aligned.)DOC"));
 
 void RegisterContribSchemas() {
   ONNX_CONTRIB_OPERATOR_SCHEMA_ELSEWHERE(AttnLSTM, RegisterAttnLSTMContribOpSchema);
@@ -2710,20 +2576,7 @@ void RegisterContribSchemas() {
         propagateElemTypeFromInputToOutput(ctx, 0, 0);
       });
 
-  static const char* BitmaskDropout_ver1_doc = R"DOC(
-BitmaskDropout takes an input floating-point tensor, an optional input ratio (floating-point scalar) and an optional input training_mode (boolean scalar).
-It produces two tensor outputs: output (floating-point tensor) and mask (optional `Tensor<uint32>`). If `training_mode` is true then the output Y will be a random dropout.
-Note that this Dropout scales the masked input data by the following equation, so to convert the trained model into inference mode, the user can simply not pass `training_mode` input or set it to false.
-```
-output = scale * data * mask,
-```
-where
-```
-scale = 1. / (1. - ratio).
-```
-
-This op functions in much the same was as Dropout-11 and Dropout-13 do, execpt that the mask is output as a bit-packed uint32 tensor, instead of a boolean tensor.
-)DOC";
+  static const char* BitmaskDropout_ver1_doc = R"DOC(\nBitmaskDropout takes an input floating-point tensor, an optional input ratio (floating-point scalar) and an optional input training_mode (boolean scalar).\nIt produces two tensor outputs: output (floating-point tensor) and mask (optional `Tensor<uint32>`). If `training_mode` is true then the output Y will be a random dropout.\nNote that this Dropout scales the masked input data by the following equation, so to convert the trained model into inference mode, the user can simply not pass `training_mode` input or set it to false.\n```\noutput = scale * data * mask,\n```\nwhere\n```\nscale = 1. / (1. - ratio).\n```\n\nThis op functions in much the same was as Dropout-11 and Dropout-13 do, execpt that the mask is output as a bit-packed uint32 tensor, instead of a boolean tensor.\n)DOC";
 
   ONNX_CONTRIB_OPERATOR_SCHEMA(BitmaskDropout)
       .SetDomain(kMSDomain)
@@ -2783,12 +2636,7 @@ This op functions in much the same was as Dropout-11 and Dropout-13 do, execpt t
   // Should remove the shrunken_gather include from ENABLE_TRAINING_OPS once 1). compute optimizer is enabled for inference or
   // 2). this is needed by inference for other purpose.
 
-  static const char* ShrunkenGather_ver1_doc = R"DOC(
-    This op is a specialised case of Gather-13, adding additional constraint including: indices being 1D,
-and indices count < input element count on the specified axis.
-
-Having this op allows runtime to do operator re-ordering to reduce compute FLOPs.
-)DOC";
+  static const char* ShrunkenGather_ver1_doc = R"DOC(\n    This op is a specialised case of Gather-13, adding additional constraint including: indices being 1D,\nand indices count < input element count on the specified axis.\n\nHaving this op allows runtime to do operator re-ordering to reduce compute FLOPs.\n)DOC";
 
   ONNX_CONTRIB_OPERATOR_SCHEMA(ShrunkenGather)
       .SetDomain(kMSDomain)

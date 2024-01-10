@@ -47,11 +47,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(NhwcMaxPool, 1,
 
 ONNX_MS_OPERATOR_SET_SCHEMA(QLinearGlobalAveragePool, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-QLinearGlobalAveragePool consumes an input tensor X and applies Average pooling across
-the values in the same channel. This is equivalent to AveragePool with kernel size
-equal to the spatial dimension of input tensor. Input is of type uint8_t or int8_t.
-)DOC")
+                                .SetDoc(R"DOC(\nQLinearGlobalAveragePool consumes an input tensor X and applies Average pooling across\nthe values in the same channel. This is equivalent to AveragePool with kernel size\nequal to the spatial dimension of input tensor. Input is of type uint8_t or int8_t.\n)DOC")
                                 .Attr("channels_last", "", AttributeProto::INT, static_cast<int64_t>(0))
                                 .Input(0, "X",
                                        "Input data tensor from the previous operator; According to channels_last, "
@@ -102,40 +98,7 @@ equal to the spatial dimension of input tensor. Input is of type uint8_t or int8
                                   }
                                 }));
 
-constexpr const char* QLinearAveragePoolDoc_ver1 = R"DOC(
- QLinearAveragePool consumes an input tensor X and applies average pooling across
- the tensor according to kernel sizes, stride sizes, and pad lengths.
- average pooling consisting of computing the average on all values of a
- subset of the input tensor according to the kernel size and downsampling the
- data into the output tensor Y for further processing. The output spatial shape will be following:
- ```
- output_spatial_shape[i] = floor((input_spatial_shape[i] + pad_shape[i] - kernel_spatial_shape[i]) / strides_spatial_shape[i] + 1)
- ```
- or
- ```
- output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - kernel_spatial_shape[i]) / strides_spatial_shape[i] + 1)
- ```
- if ceil_mode is enabled
-
- ```
- * pad_shape[i] is sum of pads along axis i
- ```
-
- `auto_pad` is a DEPRECATED attribute. If you are using them currently, the output spatial shape will be following:
- ```
- VALID: output_spatial_shape[i] = ceil((input_spatial_shape[i] - kernel_spatial_shape[i] + 1) / strides_spatial_shape[i])
- SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = ceil(input_spatial_shape[i] / strides_spatial_shape[i])
- ```
- And pad shape will be following if `SAME_UPPER` or `SAME_LOWER`:
- ```
- pad_shape[i] = (output_spatial_shape[i] - 1) * strides_spatial_shape[i] + kernel_spatial_shape[i] - input_spatial_shape[i]
- ```
-
-The output of each pooling window is divided by the number of elements (exclude pad when attribute count_include_pad is zero).
-
-Input and output scales and zero points are used to convert the output to a new quantization range.
-Output = Dequantize(Input) -> AveragePool on fp32 data -> Quantize(output)
-)DOC";
+constexpr const char* QLinearAveragePoolDoc_ver1 = R"DOC(\n QLinearAveragePool consumes an input tensor X and applies average pooling across\n the tensor according to kernel sizes, stride sizes, and pad lengths.\n average pooling consisting of computing the average on all values of a\n subset of the input tensor according to the kernel size and downsampling the\n data into the output tensor Y for further processing. The output spatial shape will be following:\n ```\n output_spatial_shape[i] = floor((input_spatial_shape[i] + pad_shape[i] - kernel_spatial_shape[i]) / strides_spatial_shape[i] + 1)\n ```\n or\n ```\n output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - kernel_spatial_shape[i]) / strides_spatial_shape[i] + 1)\n ```\n if ceil_mode is enabled\n\n ```\n * pad_shape[i] is sum of pads along axis i\n ```\n\n `auto_pad` is a DEPRECATED attribute. If you are using them currently, the output spatial shape will be following:\n ```\n VALID: output_spatial_shape[i] = ceil((input_spatial_shape[i] - kernel_spatial_shape[i] + 1) / strides_spatial_shape[i])\n SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = ceil(input_spatial_shape[i] / strides_spatial_shape[i])\n ```\n And pad shape will be following if `SAME_UPPER` or `SAME_LOWER`:\n ```\n pad_shape[i] = (output_spatial_shape[i] - 1) * strides_spatial_shape[i] + kernel_spatial_shape[i] - input_spatial_shape[i]\n ```\n\nThe output of each pooling window is divided by the number of elements (exclude pad when attribute count_include_pad is zero).\n\nInput and output scales and zero points are used to convert the output to a new quantization range.\nOutput = Dequantize(Input) -> AveragePool on fp32 data -> Quantize(output)\n)DOC";
 
 constexpr const char* contrib_ops_pads_doc =
     "Padding for the beginning and ending along each spatial axis, it can take any value greater "
@@ -386,10 +349,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
 
 ONNX_MS_OPERATOR_SET_SCHEMA(NhwcFusedConv, 1,
                             OpSchema()
-                                .SetDoc(R"DOC(
-NhwcFusedConv is a Conv operator with optional activation and add operators fused in.
-Only has fp16 implementation as of 2023/04/15.
-)DOC")
+                                .SetDoc(R"DOC(\nNhwcFusedConv is a Conv operator with optional activation and add operators fused in.\nOnly has fp16 implementation as of 2023/04/15.\n)DOC")
                                 .Attr("auto_pad", "", AttributeProto::STRING, std::string("NOTSET"))
                                 .Attr("kernel_shape", "", AttributeProto::INTS, OPTIONAL_VALUE)
                                 .Attr("dilations", "", AttributeProto::INTS, OPTIONAL_VALUE)

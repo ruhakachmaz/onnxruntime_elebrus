@@ -227,30 +227,7 @@ void MultiHeadAttentionTypeAndShapeInference(ONNX_NAMESPACE::InferenceContext& c
   }
 }
 
-constexpr const char* Attention_ver1_doc = R"DOC(
-Multi-Head Attention that can be either unidirectional (like GPT-2) or bidirectional (like BERT).
-
-The weights for input projection of Q, K and V are merged. The data is stacked on the second dimension. Its shape
-is (input_hidden_size, hidden_size + hidden_size + v_hidden_size). Here hidden_size is the hidden dimension of Q and K,
-and v_hidden_size is that of V.
-
-The mask_index is optional. Besides raw attention mask with shape (batch_size, total_sequence_length)
-or (batch_size, sequence_length, total_sequence_length) with value 0 for masked and 1 otherwise,
-we support other two formats: When input has right-side padding, mask_index is one dimension with shape (batch_size),
-where value is actual sequence length excluding padding. When input has left-side padding, mask_index has
-shape (2 * batch_size), where the values are the exclusive end positions followed by the inclusive start positions.
-
-When unidirectional is 1, each token only attends to previous tokens.
-
-Both past and present state are optional. They shall be used together, and not allowed to use only one of them.
-The qkv_hidden_sizes is required only when K and V have different hidden sizes.
-
-When there is past state, hidden dimension for Q, K and V shall be the same.
-
-The total_sequence_length is past_sequence_length + kv_sequence_length. Here kv_sequence_length is the length of K or V.
-For self attention, kv_sequence_length equals to sequence_length (sequence length of Q).
-For cross attention, query and key might have different lengths.
-)DOC";
+constexpr const char* Attention_ver1_doc = R"DOC(\nMulti-Head Attention that can be either unidirectional (like GPT-2) or bidirectional (like BERT).\n\nThe weights for input projection of Q, K and V are merged. The data is stacked on the second dimension. Its shape\nis (input_hidden_size, hidden_size + hidden_size + v_hidden_size). Here hidden_size is the hidden dimension of Q and K,\nand v_hidden_size is that of V.\n\nThe mask_index is optional. Besides raw attention mask with shape (batch_size, total_sequence_length)\nor (batch_size, sequence_length, total_sequence_length) with value 0 for masked and 1 otherwise,\nwe support other two formats: When input has right-side padding, mask_index is one dimension with shape (batch_size),\nwhere value is actual sequence length excluding padding. When input has left-side padding, mask_index has\nshape (2 * batch_size), where the values are the exclusive end positions followed by the inclusive start positions.\n\nWhen unidirectional is 1, each token only attends to previous tokens.\n\nBoth past and present state are optional. They shall be used together, and not allowed to use only one of them.\nThe qkv_hidden_sizes is required only when K and V have different hidden sizes.\n\nWhen there is past state, hidden dimension for Q, K and V shall be the same.\n\nThe total_sequence_length is past_sequence_length + kv_sequence_length. Here kv_sequence_length is the length of K or V.\nFor self attention, kv_sequence_length equals to sequence_length (sequence length of Q).\nFor cross attention, query and key might have different lengths.\n)DOC";
 
 // Currently, the `convert_generation.py` script renames the `Attention` nodes to `DecoderMaskedSelfAttention`
 // if the user requests it. Hence, the schemas of `DecoderMaskedSelfAttention` and `Attention` schemas
@@ -349,28 +326,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           AttentionTypeAndShapeInference(ctx, past_input_index);
         }));
 
-constexpr const char* PackingAttention_ver1_doc = R"DOC(
-This is the packed version of Attention.
-
-Sequences in one batch usually don't have same length and they are padded to have same length,
-e.g., below is a batch with 3 sequences and tokens* are padded.
-  Sequence_0:   0,  1*, 2*,  3*
-  Sequence_1:   4,  5,  6*,  7*
-  Sequence_2:   8,  9,  10,  11
-
-PackedAttention is designed to takes in packed input, i.e., only the real tokens without padding.
-An input as above will be packed into 3 tensors like below:
- - input ([h0, h4, h5, h8, h9, h10, h11])
- - token_offset: 0, 4, 5, 8, 9, 10, 11,  1*, 2*, 3*, 6*, 7*
- - cumulated_token_count: 0, 1, 1+2, 1+2+4
-
-Input tensors contains the hidden embedding of real tokens.
-Token_offset records the offset of token in the unpacked input.
-cumulated_token_count records cumulated length of each sequnces length.
-
-The operator only supports BERT like model with padding on right now.
-
-)DOC";
+constexpr const char* PackingAttention_ver1_doc = R"DOC(\nThis is the packed version of Attention.\n\nSequences in one batch usually don't have same length and they are padded to have same length,\ne.g., below is a batch with 3 sequences and tokens* are padded.\n  Sequence_0:   0,  1*, 2*,  3*\n  Sequence_1:   4,  5,  6*,  7*\n  Sequence_2:   8,  9,  10,  11\n\nPackedAttention is designed to takes in packed input, i.e., only the real tokens without padding.\nAn input as above will be packed into 3 tensors like below:\n - input ([h0, h4, h5, h8, h9, h10, h11])\n - token_offset: 0, 4, 5, 8, 9, 10, 11,  1*, 2*, 3*, 6*, 7*\n - cumulated_token_count: 0, 1, 1+2, 1+2+4\n\nInput tensors contains the hidden embedding of real tokens.\nToken_offset records the offset of token in the unpacked input.\ncumulated_token_count records cumulated length of each sequnces length.\n\nThe operator only supports BERT like model with padding on right now.\n\n)DOC";
 
 // Shape inference for PackedAttention. Here are the shapes of inputs and output:
 // Input 'input':                      (token_count, input_hidden_size)
@@ -476,22 +432,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           PackedAttentionTypeAndShapeInference(ctx);
         }));
 
-constexpr const char* DecoderMaskedSelfAttention_ver1_doc = R"DOC(
-Self attention that supports input sequence length of 1.
-
-The weights for input projection of Q, K and V are merged. The data is stacked on the second dimension. Its shape
-is (input_hidden_size, hidden_size + hidden_size + v_hidden_size). Here hidden_size is the hidden dimension of Q and K,
-and v_hidden_size is that of V.
-
-The mask_index is optional. If it is provided, only raw attention mask with shape (batch_size, total_sequence_length) is supported currently.
-
-Both past and present state need to be provided.
-
-The qkv_hidden_sizes is required only when K and V have different hidden sizes.
-
-The total_sequence_length is past_sequence_length + kv_sequence_length. Here kv_sequence_length is the length of K or V.
-Currently, only self attention is supported which means that kv_sequence_length equals to sequence_length (sequence length of Q).
-)DOC";
+constexpr const char* DecoderMaskedSelfAttention_ver1_doc = R"DOC(\nSelf attention that supports input sequence length of 1.\n\nThe weights for input projection of Q, K and V are merged. The data is stacked on the second dimension. Its shape\nis (input_hidden_size, hidden_size + hidden_size + v_hidden_size). Here hidden_size is the hidden dimension of Q and K,\nand v_hidden_size is that of V.\n\nThe mask_index is optional. If it is provided, only raw attention mask with shape (batch_size, total_sequence_length) is supported currently.\n\nBoth past and present state need to be provided.\n\nThe qkv_hidden_sizes is required only when K and V have different hidden sizes.\n\nThe total_sequence_length is past_sequence_length + kv_sequence_length. Here kv_sequence_length is the length of K or V.\nCurrently, only self attention is supported which means that kv_sequence_length equals to sequence_length (sequence length of Q).\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     DecoderMaskedSelfAttention, 1,
@@ -583,11 +524,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           AttentionTypeAndShapeInference(ctx, past_input_index);
         }));
 
-constexpr const char* DecoderMaskedMultiHeadAttention_ver1_doc = R"DOC(
-Multihead attention that supports input sequence length of 1.
-Similar to DecoderMaskedSelfAttention but this op excludes QKV MatMul and Bias.
-This op supports both Self and Cross Attention.
-)DOC";
+constexpr const char* DecoderMaskedMultiHeadAttention_ver1_doc = R"DOC(\nMultihead attention that supports input sequence length of 1.\nSimilar to DecoderMaskedSelfAttention but this op excludes QKV MatMul and Bias.\nThis op supports both Self and Cross Attention.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     DecoderMaskedMultiHeadAttention, 1,
@@ -697,13 +634,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           MultiHeadAttentionTypeAndShapeInference(ctx, 5);
         }));
 
-constexpr const char* MultiHeadAttention_ver1_doc = R"DOC(
-Multi-Head Self/Cross Attention. Bias from input projection is included.
-
-The key padding mask is optional. When its shape is (batch_size, kv_sequence_length), value 0
-means padding or 1 otherwise. When key has right-side padding, its shape could be (batch_size): it is actual length of
-each key sequence excluding paddings.
-)DOC";
+constexpr const char* MultiHeadAttention_ver1_doc = R"DOC(\nMulti-Head Self/Cross Attention. Bias from input projection is included.\n\nThe key padding mask is optional. When its shape is (batch_size, kv_sequence_length), value 0\nmeans padding or 1 otherwise. When key has right-side padding, its shape could be (batch_size): it is actual length of\neach key sequence excluding paddings.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     MultiHeadAttention, 1,
@@ -779,16 +710,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           MultiHeadAttentionTypeAndShapeInference(ctx, 6);
         }));
 
-constexpr const char* Longformer_Attention_doc = R"DOC(
-Longformer Self Attention with a local context and a global context. Tokens attend locally: Each token
-attends to its W previous tokens and W succeeding tokens with W being the window length. A selected few tokens
-attend globally to all other tokens.
-
-The attention mask is of shape (batch_size, sequence_length), where sequence_length is a multiple of 2W after padding.
-Mask value < 0 (like -10000.0) means the token is masked, 0 otherwise.
-
-Global attention flags have value 1 for the tokens attend globally and 0 otherwise.
-)DOC";
+constexpr const char* Longformer_Attention_doc = R"DOC(\nLongformer Self Attention with a local context and a global context. Tokens attend locally: Each token\nattends to its W previous tokens and W succeeding tokens with W being the window length. A selected few tokens\nattend globally to all other tokens.\n\nThe attention mask is of shape (batch_size, sequence_length), where sequence_length is a multiple of 2W after padding.\nMask value < 0 (like -10000.0) means the token is masked, 0 otherwise.\n\nGlobal attention flags have value 1 for the tokens attend globally and 0 otherwise.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     LongformerAttention, 1,
@@ -810,10 +732,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
         .TypeConstraint("G", {"tensor(int32)"}, "Constrain to integer types")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* Decoder_Attention_doc = R"DOC(
-This DecoderAttention supports self attention and cross attention, key and value cache, and key_padding_mask. The attention mask is not support at the moment.
-Some boolean parameters are passed by runtime input for generic purpose
-)DOC";
+constexpr const char* Decoder_Attention_doc = R"DOC(\nThis DecoderAttention supports self attention and cross attention, key and value cache, and key_padding_mask. The attention mask is not support at the moment.\nSome boolean parameters are passed by runtime input for generic purpose\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     DecoderAttention, 1,
@@ -843,12 +762,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           DecoderAttentionTypeAndShapeInference(ctx);
         }));
 
-constexpr const char* EmbedLayerNormalization_ver1_doc = R"DOC(
-EmbedLayerNormalization is the fusion of embedding layer in BERT model, with optional mask processing.
-The embedding layer takes input_ids (word IDs) and segment_ids (sentence IDs) to look up word_embedding, position_embedding,
-and segment_emedding; the embeddings are added then applied layer normalization using gamma and beta tensors.
-The last input mask is optional. If mask is provided, mask index (that is position of first 0 in mask, or number of words)
-will be calculated.)DOC";
+constexpr const char* EmbedLayerNormalization_ver1_doc = R"DOC(\nEmbedLayerNormalization is the fusion of embedding layer in BERT model, with optional mask processing.\nThe embedding layer takes input_ids (word IDs) and segment_ids (sentence IDs) to look up word_embedding, position_embedding,\nand segment_emedding; the embeddings are added then applied layer normalization using gamma and beta tensors.\nThe last input mask is optional. If mask is provided, mask index (that is position of first 0 in mask, or number of words)\nwill be calculated.)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     EmbedLayerNormalization, 1,
@@ -872,8 +786,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
         .TypeConstraint("T", {"tensor(float)", "tensor(float16)"}, "Constrain input and output float tensors types.")
         .TypeAndShapeInferenceFunction(EmbedLayerNormalizationShapeInference));
 
-constexpr const char* FastGelu_ver1_doc = R"DOC(
-GELU (Gaussian Error Linear Unit) approximation: Y=0.5*X*(1+tanh(0.797885*X+0.035677*X*X*X)) with an optional input of bias that will be added to X before GELU.)DOC";
+constexpr const char* FastGelu_ver1_doc = R"DOC(\nGELU (Gaussian Error Linear Unit) approximation: Y=0.5*X*(1+tanh(0.797885*X+0.035677*X*X*X)) with an optional input of bias that will be added to X before GELU.)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     FastGelu, 1,
@@ -1007,9 +920,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
         .TypeConstraint("U", {"tensor(float)"}, "Constrain mean and inv_std_var to float tensors.")
         .TypeAndShapeInferenceFunction(ONNX_NAMESPACE::propagateShapeAndTypeFromFirstInput));
 
-constexpr const char* NGramRepeatBlock_ver1_doc = R"DOC(
-Enforce no repetition of n-grams. Scores are set to `-inf` for tokens that form a repeated n-gram if added to the back of the input_ids.
-)DOC";
+constexpr const char* NGramRepeatBlock_ver1_doc = R"DOC(\nEnforce no repetition of n-grams. Scores are set to `-inf` for tokens that form a repeated n-gram if added to the back of the input_ids.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     NGramRepeatBlock, 1,
@@ -1021,18 +932,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
       propagateShapeFromInputToOutput(ctx, 1, 0);
     }));
 
-constexpr const char* BifurcationDetector_ver1_doc = R"DOC(
-Component for aggressive decoding. Find the bifurcation index of predicted tokens, between source tokens,
-starting from previous suffix match index, and predicted tokens.
-Concat predicted tokens, starting from bifurcation index, to the back
-of current tokens. This forms the output tokens.
-Detect suffix match index in source tokens, between source tokens and output tokens.
-Detection is based on finding the appearances of last n-gram in output tokens
-in source tokens.
-A match is considered found if source tokens contain a single matching n-gram.
-Return the index of the start of the n-gram in source tokens.
-No matching if found if src tokens contain multiple or zero matching n-grams. Return -1.
-)DOC";
+constexpr const char* BifurcationDetector_ver1_doc = R"DOC(\nComponent for aggressive decoding. Find the bifurcation index of predicted tokens, between source tokens,\nstarting from previous suffix match index, and predicted tokens.\nConcat predicted tokens, starting from bifurcation index, to the back\nof current tokens. This forms the output tokens.\nDetect suffix match index in source tokens, between source tokens and output tokens.\nDetection is based on finding the appearances of last n-gram in output tokens\nin source tokens.\nA match is considered found if source tokens contain a single matching n-gram.\nReturn the index of the start of the n-gram in source tokens.\nNo matching if found if src tokens contain multiple or zero matching n-grams. Return -1.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     BifurcationDetector, 1,
@@ -1058,8 +958,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           // tokens_length = cur_tokens_length + bifurcation_index + 1.
         }));
 
-constexpr const char* GemmFastGelu_ver1_doc = R"DOC(
-It's a fusion of MatMul and FastGelu.)DOC";
+constexpr const char* GemmFastGelu_ver1_doc = R"DOC(\nIt's a fusion of MatMul and FastGelu.)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     GemmFastGelu, 1,
@@ -1076,15 +975,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           ONNX_NAMESPACE::matmulShapeInference(ctx, 0, 1);
         }));
 
-constexpr const char* RemovePadding_ver1_doc = R"DOC(
-Compress transformer input by removing paddings. It assumes padding is on the right side of sequence.
-
-The input has padding with shape (batch_size, sequence_length, hidden_size). This will generate two outputs:
-output has shape (total_tokens, hidden_size); token_offset with shape (batch_size, sequence_length).
-
-token_offset has offsets of all non-padding tokens first, then offset of all padding tokens. It is
-a list of batch_size * sequence_length elements, which is reshaped to 2D for convenience of shape inference.
-)DOC";
+constexpr const char* RemovePadding_ver1_doc = R"DOC(\nCompress transformer input by removing paddings. It assumes padding is on the right side of sequence.\n\nThe input has padding with shape (batch_size, sequence_length, hidden_size). This will generate two outputs:\noutput has shape (total_tokens, hidden_size); token_offset with shape (batch_size, sequence_length).\n\ntoken_offset has offsets of all non-padding tokens first, then offset of all padding tokens. It is\na list of batch_size * sequence_length elements, which is reshaped to 2D for convenience of shape inference.\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     RemovePadding, 1,
@@ -1124,12 +1015,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           RemovePaddingTypeAndShapeInference(ctx);
         }));
 
-constexpr const char* RestorePadding_ver1_doc = R"DOC(
-Restore paddings and fill padding with zeros.
-
-The input has padding with shape (total_tokens, hidden_size) and token_offset with shape (batch_size, sequence_length).
-The output has shape (batch_size, sequence_length, hidden_size).
-)DOC";
+constexpr const char* RestorePadding_ver1_doc = R"DOC(\nRestore paddings and fill padding with zeros.\n\nThe input has padding with shape (total_tokens, hidden_size) and token_offset with shape (batch_size, sequence_length).\nThe output has shape (batch_size, sequence_length, hidden_size).\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     RestorePadding, 1,
@@ -1157,14 +1043,7 @@ ONNX_MS_OPERATOR_SET_SCHEMA(
           RestorePaddingTypeAndShapeInference(ctx);
         }));
 
-constexpr const char* GatedRelativePositionBias_ver1_doc = R"DOC(
-  query_layer = (query_layer + query_bias).reshape(batch_size, seq_len, num_heads, head_size).transpose(1, 2)
-  gate_u, gate_r = torch.sigmoid(
-      self.gate_ur_linear(query_layer).view(batch_size, num_head, seq_len, 2, D/2).sum(-1, keepdim=False)
-  ).chunk(2, dim=-1)
-  gate_u_1 = gate_u * (gate_r * self.eco_a - 1.0) + 2.0
-  rel_pos_bias = gate_u_1 * rel_pos
-)DOC";
+constexpr const char* GatedRelativePositionBias_ver1_doc = R"DOC(\n  query_layer = (query_layer + query_bias).reshape(batch_size, seq_len, num_heads, head_size).transpose(1, 2)\n  gate_u, gate_r = torch.sigmoid(\n      self.gate_ur_linear(query_layer).view(batch_size, num_head, seq_len, 2, D/2).sum(-1, keepdim=False)\n  ).chunk(2, dim=-1)\n  gate_u_1 = gate_u * (gate_r * self.eco_a - 1.0) + 2.0\n  rel_pos_bias = gate_u_1 * rel_pos\n)DOC";
 
 ONNX_MS_OPERATOR_SET_SCHEMA(
     GatedRelativePositionBias, 1,
