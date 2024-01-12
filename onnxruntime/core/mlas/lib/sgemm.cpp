@@ -1079,6 +1079,7 @@ Return Value:
     return C;
 }
 
+#if !defined(__e2k__)
 void
 MlasSgemmOperation(
     CBLAS_TRANSPOSE TransA,
@@ -1317,6 +1318,124 @@ Return Value:
         }
     }
 }
+#else
+
+void
+MlasSgemmOperation(
+    CBLAS_TRANSPOSE TransA,
+    CBLAS_TRANSPOSE TransB,
+    size_t M,
+    size_t N,
+    size_t K,
+    float alpha,
+    const float* A,
+    size_t lda,
+    const float* B,
+    size_t ldb,
+    float beta,
+    float* C,
+    size_t ldc
+    )
+/*++
+
+Routine Description:
+
+    This routine implements the single precision matrix/matrix multiply
+    operation (SGEMM) via EML Elbrus.
+
+Arguments:
+
+    TransA - Supplies the transpose operation for matrix A.
+
+    TransB - Supplies the transpose operation for matrix B.
+
+    M - Supplies the number of rows of matrix A and matrix C.
+
+    N - Supplies the number of columns of matrix B and matrix C.
+
+    K - Supplies the number of columns of matrix A and the number of rows of
+        matrix B.
+
+    alpha - Supplies the scalar alpha multiplier (see SGEMM definition).
+
+    A - Supplies the address of matrix A.
+
+    lda - Supplies the first dimension of matrix A.
+
+    B - Supplies the address of matrix B.
+
+    ldb - Supplies the first dimension of matrix B.
+
+    beta - Supplies the scalar beta multiplier (see SGEMM definition).
+
+    C - Supplies the address of matrix C.
+
+    ldc - Supplies the first dimension of matrix C.
+
+Return Value:
+
+    None.
+
+--*/
+{
+    if (TransA == CBLAS_TRANSPOSE::CblasNoTrans) {
+        if (TransB == CBLAS_TRANSPOSE::CblasNoTrans) {
+
+            eml_Algebra_GEMM_32F(
+                eml_matrix_order::EML_MATRIX_ROW_MAJOR,
+                eml_matrix_transpose::EML_MATRIX_NO_TRANS,
+                eml_matrix_transpose::EML_MATRIX_NO_TRANS,
+                M, N, K,
+                alpha,
+                A, lda,
+                B, ldb,
+                beta,
+                C, ldc
+            );
+        } else {
+
+            eml_Algebra_GEMM_32F(
+                eml_matrix_order::EML_MATRIX_ROW_MAJOR,
+                eml_matrix_transpose::EML_MATRIX_NO_TRANS,
+                eml_matrix_transpose::EML_MATRIX_TRANS,
+                M, N, K,
+                alpha,
+                A, lda,
+                B, ldb,
+                beta,
+                C, ldc);
+        }
+
+    }
+
+    if (TransA == CBLAS_TRANSPOSE::CblasTrans) {
+        if (TransB == CBLAS_TRANSPOSE::CblasNoTrans) {
+            eml_Algebra_GEMM_32F(
+                eml_matrix_order::EML_MATRIX_ROW_MAJOR,
+                eml_matrix_transpose::EML_MATRIX_TRANS,
+                eml_matrix_transpose::EML_MATRIX_NO_TRANS,
+                M, N, K,
+                alpha,
+                A, lda,
+                B, ldb,
+                beta,
+                C, ldc);
+    } else {
+            eml_Algebra_GEMM_32F(
+                eml_matrix_order::EML_MATRIX_ROW_MAJOR,
+                eml_matrix_transpose::EML_MATRIX_TRANS,
+                eml_matrix_transpose::EML_MATRIX_TRANS,
+                M, N, K,
+                alpha,
+                A, lda,
+                B, ldb,
+                beta,
+                C, ldc);
+        }
+    }
+}
+
+#endif
 
 void
 MlasSgemmPackedOperation(

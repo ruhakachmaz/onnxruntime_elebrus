@@ -287,6 +287,8 @@ else()
           set(ARM TRUE)
         elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^aarch64.*")
           set(ARM64 TRUE)
+	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "e2k")
+	  set(E2K TRUE)
         elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc.*|ppc.*)")
           set(POWER TRUE)
         elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86?)$")
@@ -369,6 +371,31 @@ else()
         else()
             set(MLAS_SOURCE_IS_NOT_SET 0)
         endif()
+    endif()
+    if(E2K)
+	enable_language(ASM)
+        add_library(eml INTERFACE
+            /usr/include/eml/cblas.h
+            /usr/include/eml/clapack.h
+            /usr/include/eml/eml_algebra.h
+            /usr/include/eml/eml_core.h
+            /usr/include/eml/eml_defs.h
+            /usr/include/eml/eml_graphics.h
+            /usr/include/eml/eml.h
+            /usr/include/eml/eml_image.h
+            /usr/include/eml/eml_signal.h
+            /usr/include/eml/eml_vector.h
+            /usr/include/eml/eml_video.h
+            /usr/include/eml/eml_volume.h
+            /usr/include/eml/fftw3.h
+            )
+        add_library(private_eml INTERFACE
+            /usr/include/private_eml/e2k_intrin.h
+            /usr/include/private_eml/eml_math.h
+            /usr/include/private_eml/eml_owndefs.h
+            )
+       target_include_directories(eml INTERFACE include) # FIXME: Changed by Rozhin
+       target_include_directories(private_eml INTERFACE include)
     endif()
     if(POWER AND MLAS_SOURCE_IS_NOT_SET)
         set(mlas_platform_srcs
@@ -580,6 +607,13 @@ foreach(mlas_target ${ONNXRUNTIME_MLAS_LIBS})
     target_include_directories(${mlas_target} PRIVATE ${ONNXRUNTIME_ROOT}/core/mlas/inc ${MLAS_SRC_DIR})
     onnxruntime_add_include_to_target(${mlas_target} ${GSL_TARGET})
 endforeach()
+if(E2K)
+        list(APPEND ONNXRUNTIME_MLAS_LIBS eml)
+	list(APPEND ONNXRUNTIME_MLAS_LIBS eml_algebra)
+	list(APPEND ONNXRUNTIME_MLAS_LIBS private_eml)
+        include_directories(/usr/include/eml)
+        include_directories(/usr/include/private_eml)
+endif()
 set_target_properties(onnxruntime_mlas PROPERTIES FOLDER "ONNXRuntime")
 if (WIN32)
   target_compile_options(onnxruntime_mlas PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:/wd6385>" "$<$<COMPILE_LANGUAGE:CXX>:/wd4127>")

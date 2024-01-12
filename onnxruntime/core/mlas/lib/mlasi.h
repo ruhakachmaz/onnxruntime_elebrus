@@ -49,8 +49,12 @@ Abstract:
 #if defined(__arm__) || defined(__aarch64__)
 #include <arm_neon.h>
 #endif
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) || defined(__i386__) || defined(__e2k__)
+#if !defined(__e2k__)
 #include <cpuid.h>
+#else
+#include <eml.h>
+#endif
 #include <immintrin.h>
 #endif
 #if defined(__VSX__)
