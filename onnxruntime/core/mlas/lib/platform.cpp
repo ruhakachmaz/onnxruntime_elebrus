@@ -77,7 +77,7 @@ MLASCPUIDInfo::MLASCPUIDInfo() {}
 
 #endif // MLAS_TARGET_ARM64
 
-#ifdef MLAS_TARGET_AMD64_IX86
+#if defined(MLAS_TARGET_AMD64_IX86) && !defined(__e2k__)
 
 //
 // Stores a vector to build a conditional load/store mask for vmaskmovps.
@@ -201,10 +201,13 @@ Return Value:
     //
     // Default to the baseline SSE2 support.
     //
-
-    this->GemmFloatKernel = MlasGemmFloatKernelSse;
+    this->GemmU8U8Kernel = MlasGemmU8U8KernelSse;
+    this->GemmU8S8Kernel = MlasGemmU8S8KernelSse;
     this->GemmU8S8Dispatch = &MlasGemmU8X8DispatchSse;
     this->GemmU8U8Dispatch = &MlasGemmU8X8DispatchSse;
+#if !defined(__e2k__)
+    this->GemmFloatKernel = MlasGemmFloatKernelSse;
+
 
 #if defined(MLAS_TARGET_AMD64)
 
@@ -429,6 +432,8 @@ Return Value:
 
         }
     }
+
+#endif // e2k
 
 #endif // MLAS_TARGET_AMD64_IX86
 

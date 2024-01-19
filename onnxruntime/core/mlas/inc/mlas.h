@@ -38,7 +38,7 @@ Abstract:
 #if (defined(_M_AMD64) && !defined(_M_ARM64EC)) || defined(__x86_64__)
 #define MLAS_TARGET_AMD64
 #endif
-#if defined(_M_IX86) || defined(__i386__)
+#if defined(_M_IX86) || defined(__i386__) || defined (__e2k__)
 #define MLAS_TARGET_IX86
 #endif
 #if defined(MLAS_TARGET_AMD64) || defined(MLAS_TARGET_IX86)

@@ -50,12 +50,13 @@ Abstract:
 #include <arm_neon.h>
 #endif
 #if defined(__x86_64__) || defined(__i386__) || defined(__e2k__)
+#include <immintrin.h>
 #if !defined(__e2k__)
 #include <cpuid.h>
 #else
 #include <eml.h>
 #endif
-#include <immintrin.h>
+
 #endif
 #if defined(__VSX__)
 #include <altivec.h>
@@ -648,6 +649,16 @@ struct MLAS_QUANT_KERNEL
 };
 
 extern "C" {
+
+#if defined(__e2k__)
+    //MLAS_GEMM_U8S8_COPY_PACKA_ROUTINE MlasGemmU8S8CopyPackASse;
+    //MLAS_GEMM_U8S8_COPY_PACKB_ROUTINE MlasGemmU8S8CopyPackBSse;
+    MLAS_GEMM_U8S8_KERNEL MlasGemmU8S8KernelSse;
+    //MLAS_GEMM_U8U8_COPY_PACKA_ROUTINE MlasGemmU8U8CopyPackASse;
+    //MLAS_GEMM_U8U8_COPY_PACKB_ROUTINE MlasGemmU8U8CopyPackBSse;
+    MLAS_GEMM_U8U8_KERNEL MlasGemmU8U8KernelSse;
+    MLAS_GEMM_FLOAT_KERNEL MlasGemmFloatKernelSse;
+#endif
 
 #if defined(MLAS_TARGET_AMD64_IX86)
     MLAS_GEMM_FLOAT_KERNEL MlasGemmFloatKernelSse;
