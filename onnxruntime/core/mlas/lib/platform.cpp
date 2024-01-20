@@ -201,13 +201,11 @@ Return Value:
     //
     // Default to the baseline SSE2 support.
     //
-    this->GemmU8U8Kernel = MlasGemmU8U8KernelSse;
-    this->GemmU8S8Kernel = MlasGemmU8S8KernelSse;
-    this->GemmU8S8Dispatch = &MlasGemmU8X8DispatchSse;
-    this->GemmU8U8Dispatch = &MlasGemmU8X8DispatchSse;
+
 #if !defined(__e2k__)
     this->GemmFloatKernel = MlasGemmFloatKernelSse;
-
+    this->GemmU8S8Dispatch = &MlasGemmU8X8DispatchSse;
+    this->GemmU8U8Dispatch = &MlasGemmU8X8DispatchSse;
 
 #if defined(MLAS_TARGET_AMD64)
 
