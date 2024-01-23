@@ -144,7 +144,7 @@ struct MLAS_ACTIVATION_FUNCTION<MlasLeakyReluActivation>
 #elif defined(MLAS_VSX_INTRINSICS)
         return vec_sel(ValueTimesAlpha, Value, vec_cmple(ZeroFloat32x4, Value));
 #else
-        return MlasBlendFloat32x4(ValueTimesAlpha, Value, MlasCastToFloat32x4(ZeroFloat32x4 < Value));
+        return MlasBlendFloat32x4(ValueTimesAlpha, Value, MLAS_FLOAT32X4(ZeroFloat32x4 < Value));
 #endif
     }
 

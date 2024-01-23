@@ -1828,7 +1828,7 @@ MlasGreaterThanFloat32x4(MLAS_FLOAT32X4 Vector1, MLAS_FLOAT32X4 Vector2)
 #elif defined(MLAS_VSX_INTRINSICS)
     return MLAS_FLOAT32X4(vec_cmpgt(Vector1, Vector2));
 #else
-    return MlasCastToFloat32x4(Vector1 > Vector2);
+    return MLAS_FLOAT32X4(Vector1 > Vector2);
 #endif
 }
 
@@ -1905,7 +1905,7 @@ MlasMaximumFloat32x4(MLAS_FLOAT32X4 Vector1, MLAS_FLOAT32X4 Vector2)
 #elif defined(MLAS_WASM_SIMD_INTRINSICS)
     return wasm_f32x4_max(Vector1, Vector2);
 #else
-    return MlasBlendFloat32x4(Vector2, Vector1, MlasCastToFloat32x4(Vector1 > Vector2));
+    return MlasBlendFloat32x4(Vector2, Vector1, MLAS_FLOAT32X4(Vector1 > Vector2));
 #endif
 }
 
@@ -1923,7 +1923,7 @@ MlasMinimumFloat32x4(MLAS_FLOAT32X4 Vector1, MLAS_FLOAT32X4 Vector2)
 #elif defined(MLAS_WASM_SIMD_INTRINSICS)
     return wasm_f32x4_min(Vector1, Vector2);
 #else
-    return MlasBlendFloat32x4(Vector2, Vector1, MlasCastToFloat32x4(Vector2 > Vector1));
+    return MlasBlendFloat32x4(Vector2, Vector1, MLAS_FLOAT32X4(Vector2 > Vector1));
 #endif
 }
 
