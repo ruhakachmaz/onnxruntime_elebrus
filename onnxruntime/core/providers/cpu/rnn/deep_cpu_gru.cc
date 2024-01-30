@@ -252,6 +252,7 @@ class UniDirectionalGru {
 #define DumpMatrix(...) ((void)0)
 #endif
 
+#if !defined(__e2k__)
 bool DeepCpuGruOp::TryPackInputWeights(const Tensor& weights, AllocatorPtr& alloc) {
   const auto& shape = weights.Shape();
   if (shape.NumDimensions() != 3) {
@@ -296,6 +297,13 @@ bool DeepCpuGruOp::TryPackInputWeights(const Tensor& weights, AllocatorPtr& allo
   return true;
 }
 
+#else // e2k
+bool DeepCpuGruOp::TryPackInputWeights(const Tensor& weights, AllocatorPtr& alloc) {
+    return false;
+}
+#endif
+
+#if !defined(__e2k__)
 bool DeepCpuGruOp::TryPackRecurrentWeights(const Tensor& weights, AllocatorPtr& alloc) {
   const auto& shape = weights.Shape();
   if (shape.NumDimensions() != 3) {
@@ -364,7 +372,13 @@ bool DeepCpuGruOp::TryPackRecurrentWeights(const Tensor& weights, AllocatorPtr& 
 
   return true;
 }
+#else // e2k
+bool DeepCpuGruOp::TryPackRecurrentWeights(const Tensor& weights, AllocatorPtr& alloc) {
+  return false;
+}
+#endif
 
+#if !defined(__e2k__)
 Status DeepCpuGruOp::PrePack(const Tensor& tensor, int input_idx, AllocatorPtr alloc,
                              bool& is_packed, PrePackedWeights* prepacked_weights) {
   is_packed = false;
@@ -393,7 +407,17 @@ Status DeepCpuGruOp::PrePack(const Tensor& tensor, int input_idx, AllocatorPtr a
   }
   return Status::OK();
 }
+#else // e2k
+Status DeepCpuGruOp::PrePack(const Tensor& tensor, int input_idx, AllocatorPtr alloc,
+                             bool& is_packed, PrePackedWeights* prepacked_weights) {
+  is_packed = false;
+  const bool share_prepacked_weights = false;
 
+  return Status::OK();
+}
+#endif
+
+#if !defined(__e2k__)
 Status DeepCpuGruOp::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prepacked_buffers,
                                                int input_idx,
                                                /*out*/ bool& used_shared_buffers) {
@@ -410,7 +434,14 @@ Status DeepCpuGruOp::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& pre
 
   return Status::OK();
 }
-
+#else // e2k
+Status DeepCpuGruOp::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prepacked_buffers,
+                                               int input_idx,
+                                               /*out*/ bool& used_shared_buffers) {
+  used_shared_buffers = false;
+  return Status::OK();
+                                               }
+#endif
 Status DeepCpuGruOp::Compute(OpKernelContext* context) const {
   const Tensor& X = *context->Input<Tensor>(0);  // inputs. [seq_length, batch_size, input_size]
 
