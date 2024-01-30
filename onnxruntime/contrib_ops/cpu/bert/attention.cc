@@ -62,6 +62,7 @@ template <typename T>
 Attention<T>::Attention(const OpKernelInfo& info) : OpKernel(info), AttentionCPUBase(info, false) {
 }
 
+#if !defined(__e2k__)
 template <typename T>
 bool Attention<T>::IsPackWeightsSuccessful(int qkv_index,
                                            AllocatorPtr alloc,
@@ -99,6 +100,21 @@ bool Attention<T>::IsPackWeightsSuccessful(int qkv_index,
   return true;
 }
 
+#else
+template <typename T>
+bool Attention<T>::IsPackWeightsSuccessful(int qkv_index,
+                                           AllocatorPtr alloc,
+                                           size_t head_size,
+                                           size_t input_hidden_size,
+                                           const T* weights_data,
+                                           size_t weight_matrix_col_size,
+                                           /*out*/ PrePackedWeights* prepacked_weights) {
+  return false;
+}
+#endif
+
+
+#if !defined(__e2k__)
 template <typename T>
 Status Attention<T>::PrePack(const Tensor& weights, int input_idx, AllocatorPtr alloc,
                              /*out*/ bool& is_packed,
@@ -174,6 +190,19 @@ Status Attention<T>::PrePack(const Tensor& weights, int input_idx, AllocatorPtr 
   return Status::OK();
 }
 
+#else
+template <typename T>
+Status Attention<T>::PrePack(const Tensor& weights, int input_idx, AllocatorPtr alloc,
+                             /*out*/ bool& is_packed,
+                             /*out*/ PrePackedWeights* prepacked_weights) {
+  is_packed = false;
+  is_prepack_ = false;
+  return Status::OK();
+}
+
+#endif
+
+#if !defined(__e2k__)
 template <typename T>
 Status Attention<T>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prepacked_buffers,
                                                int input_idx,
@@ -189,6 +218,16 @@ Status Attention<T>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& pre
 
   return Status::OK();
 }
+
+#else
+template <typename T>
+Status Attention<T>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prepacked_buffers,
+                                               int input_idx,
+                                               /*out*/ bool& used_shared_buffers) {
+  used_shared_buffers = false;
+  return Status::OK();
+}
+#endif
 
 template <typename T>
 Status Attention<T>::Compute(OpKernelContext* context) const {

@@ -155,6 +155,7 @@ Status Gemm<T>::PrePack(const Tensor& /* tensor */, int /* input_idx */, Allocat
   return Status::OK();
 }
 
+#if !defined(__e2k__)
 template <>
 Status Gemm<float>::PrePack(const Tensor& tensor, int input_idx,
                             AllocatorPtr alloc, /*out*/ bool& is_packed,
@@ -173,6 +174,7 @@ Status Gemm<float>::PrePack(const Tensor& tensor, int input_idx,
   }
   return Status::OK();
 }
+#endif
 
 template <typename T>
 Status Gemm<T>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& /*prepacked_buffers*/,
@@ -182,6 +184,7 @@ Status Gemm<T>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& /*prepac
   return Status::OK();
 }
 
+#if !defined(__e2k__)
 template <>
 Status Gemm<float>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prepacked_buffers,
                                               int input_idx,
@@ -194,6 +197,7 @@ Status Gemm<float>::UseSharedPrePackedBuffers(std::vector<BufferUniquePtr>& prep
   }
   return Status::OK();
 }
+#endif
 
 template <typename T>
 void Gemm<T>::ComputeActivation(T* y_data, size_t y_size, concurrency::ThreadPool* thread_pool) const {
